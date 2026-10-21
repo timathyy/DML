@@ -1,0 +1,17 @@
+[Bb]in/
+[Oo]bj/
+.vs/
+.vscode/
+TestResults/
+artifacts/
+*.user
+*.suo
+*.db
+*.db-shm
+*.db-wal
+*.log
+appsettings.Local.json
+settings.local.json
+secrets.json
+*.pfx
+

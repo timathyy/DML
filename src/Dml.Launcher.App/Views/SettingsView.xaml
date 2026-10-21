@@ -1,0 +1,20 @@
+<UserControl x:Class="Dml.Launcher.App.Views.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <ScrollViewer VerticalScrollBarVisibility="Auto">
+    <StackPanel Margin="36" MaxWidth="620">
+      <TextBlock Text="{DynamicResource Settings}" FontSize="26" FontWeight="SemiBold" />
+      <TextBlock Text="{DynamicResource SettingsHint}" Foreground="{DynamicResource MutedForeground}" Margin="0,6,0,24" TextWrapping="Wrap" />
+      <TextBlock Text="{DynamicResource GameRootDirectory}" FontWeight="SemiBold" />
+      <TextBox Text="{Binding GameRootDirectory, UpdateSourceTrigger=PropertyChanged}" Margin="0,6,0,20" Padding="8" />
+      <TextBlock Text="{DynamicResource DownloadConcurrency}" FontWeight="SemiBold" />
+      <ComboBox ItemsSource="{Binding DownloadConcurrencyChoices}" SelectedItem="{Binding DownloadConcurrency}" Margin="0,6,0,20" Padding="6" />
+      <TextBlock Text="{DynamicResource ProxyAddress}" FontWeight="SemiBold" />
+      <TextBox Text="{Binding ProxyAddress, UpdateSourceTrigger=PropertyChanged}" Margin="0,6,0,20" Padding="8" ToolTip="例如：http://127.0.0.1:7890" />
+      <TextBlock Text="{DynamicResource Theme}" FontWeight="SemiBold" />
+      <ComboBox ItemsSource="{Binding Themes}" SelectedItem="{Binding SelectedTheme}" Margin="0,6,0,24" Padding="6" />
+      <Button Content="{DynamicResource Save}" Command="{Binding SaveCommand}" HorizontalAlignment="Left" Padding="18,8" />
+      <TextBlock Text="{Binding StatusMessage}" Margin="0,14,0,0" Foreground="#2563EB" TextWrapping="Wrap" />
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

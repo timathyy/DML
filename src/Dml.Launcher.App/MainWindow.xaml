@@ -1,0 +1,33 @@
+<Window x:Class="Dml.Launcher.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:viewModels="clr-namespace:Dml.Launcher.App.ViewModels"
+        xmlns:views="clr-namespace:Dml.Launcher.App.Views"
+        Title="DML" Width="980" Height="640" MinWidth="760" MinHeight="500"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource PageBackground}"
+        Foreground="{DynamicResource PageForeground}">
+  <Window.Resources>
+    <DataTemplate DataType="{x:Type viewModels:SettingsViewModel}">
+      <views:SettingsView />
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type viewModels:LogViewModel}">
+      <views:LogView />
+    </DataTemplate>
+  </Window.Resources>
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="210" />
+      <ColumnDefinition Width="*" />
+    </Grid.ColumnDefinitions>
+    <Border Background="#1E293B" Padding="18">
+      <StackPanel>
+        <TextBlock Text="DML" FontSize="28" FontWeight="SemiBold" Foreground="White" />
+        <TextBlock Text="{DynamicResource AppSubtitle}" Margin="0,2,0,32" Foreground="#CBD5E1" />
+        <Button Content="{DynamicResource Settings}" Command="{Binding ShowSettingsCommand}" Margin="0,0,0,8" Padding="12,8" />
+        <Button Content="{DynamicResource Logs}" Command="{Binding ShowLogsCommand}" Padding="12,8" />
+      </StackPanel>
+    </Border>
+    <ContentControl Grid.Column="1" Content="{Binding CurrentPage}" />
+  </Grid>
+</Window>
