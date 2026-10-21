@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
+using Microsoft.Win32;
 using Dml.Launcher.App.ViewModels;
 using Dml.Launcher.Application.Settings;
 using Dml.Launcher.Infrastructure;
@@ -13,6 +14,7 @@ namespace Dml.Launcher.App;
 
 public partial class App : System.Windows.Application
 {
+    private static Dml.Launcher.Domain.Settings.LauncherTheme activeTheme = Dml.Launcher.Domain.Settings.LauncherTheme.System;
     private ServiceProvider? serviceProvider;
 
     protected override async void OnStartup(StartupEventArgs e)
@@ -21,6 +23,7 @@ public partial class App : System.Windows.Application
         serviceProvider = ConfigureServices();
         DispatcherUnhandledException += OnDispatcherUnhandledException;
         AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+        SystemEvents.UserPreferenceChanged += OnUserPreferenceChanged;
 
         ISettingsService settingsService = serviceProvider.GetRequiredService<ISettingsService>();
         ILogger<App> logger = serviceProvider.GetRequiredService<ILogger<App>>();
@@ -45,6 +48,7 @@ public partial class App : System.Windows.Application
 
     protected override void OnExit(ExitEventArgs e)
     {
+        SystemEvents.UserPreferenceChanged -= OnUserPreferenceChanged;
         serviceProvider?.Dispose();
         base.OnExit(e);
     }
@@ -87,10 +91,41 @@ public partial class App : System.Windows.Application
 
     public static void ApplyTheme(Dml.Launcher.Domain.Settings.LauncherTheme theme)
     {
-        bool dark = theme == Dml.Launcher.Domain.Settings.LauncherTheme.Dark;
-        Current.Resources["PageBackground"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(dark ? "#0F172A" : "#F8FAFC"));
-        Current.Resources["PageForeground"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(dark ? "#E2E8F0" : "#0F172A"));
-        Current.Resources["MutedForeground"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(dark ? "#94A3B8" : "#64748B"));
+        activeTheme = theme;
+        bool dark = theme == Dml.Launcher.Domain.Settings.LauncherTheme.Dark ||
+                    (theme == Dml.Launcher.Domain.Settings.LauncherTheme.System && IsSystemDarkTheme());
+        Current.Resources["AppBackgroundBrush"] = CreateBrush(dark ? "#212121" : "#F7F7F8");
+        Current.Resources["SurfaceBrush"] = CreateBrush(dark ? "#2A2A2A" : "#FFFFFF");
+        Current.Resources["SurfaceHoverBrush"] = CreateBrush(dark ? "#353535" : "#F1F1F3");
+        Current.Resources["InputBrush"] = CreateBrush(dark ? "#303030" : "#FFFFFF");
+        Current.Resources["PageForeground"] = CreateBrush(dark ? "#F5F5F5" : "#202123");
+        Current.Resources["MutedForeground"] = CreateBrush(dark ? "#B4B4B4" : "#6F7076");
+        Current.Resources["SubtleForegroundBrush"] = CreateBrush(dark ? "#858585" : "#96979E");
+        Current.Resources["BorderBrush"] = CreateBrush(dark ? "#424242" : "#E7E7E9");
+        Current.Resources["AccentBrush"] = CreateBrush(dark ? "#19B887" : "#10A37F");
+        Current.Resources["AccentHoverBrush"] = CreateBrush(dark ? "#31C99A" : "#0E9272");
+        Current.Resources["AccentForegroundBrush"] = CreateBrush("#FFFFFF");
+        Current.Resources["NavigationSelectedBrush"] = CreateBrush(dark ? "#3A3A3A" : "#ECECEE");
+        Current.Resources["LogBackgroundBrush"] = CreateBrush(dark ? "#171717" : "#F0F0F2");
+        Current.Resources["LogForegroundBrush"] = CreateBrush(dark ? "#D7D8DC" : "#303136");
+    }
+
+    private static SolidColorBrush CreateBrush(string color) => new((Color)ColorConverter.ConvertFromString(color));
+
+    private static bool IsSystemDarkTheme()
+    {
+        const string PersonalizeKey = "Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize";
+        const string AppsUseLightTheme = "AppsUseLightTheme";
+        object? setting = Registry.CurrentUser.OpenSubKey(PersonalizeKey)?.GetValue(AppsUseLightTheme);
+        return setting is int value && value == 0;
+    }
+
+    private void OnUserPreferenceChanged(object sender, UserPreferenceChangedEventArgs e)
+    {
+        if (activeTheme == Dml.Launcher.Domain.Settings.LauncherTheme.System)
+        {
+            Dispatcher.Invoke(() => ApplyTheme(activeTheme));
+        }
     }
 
     [LoggerMessage(EventId = 1, Level = LogLevel.Information, Message = "DML 启动完成。")]

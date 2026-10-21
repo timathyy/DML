@@ -11,6 +11,12 @@ public sealed partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private ObservableObject currentPage;
 
+    [ObservableProperty]
+    private bool isSettingsActive = true;
+
+    [ObservableProperty]
+    private bool isLogsActive;
+
     public MainViewModel(SettingsViewModel settings, LogViewModel logs)
     {
         this.settings = settings;
@@ -19,8 +25,18 @@ public sealed partial class MainViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void ShowSettings() => CurrentPage = settings;
+    private void ShowSettings()
+    {
+        CurrentPage = settings;
+        IsSettingsActive = true;
+        IsLogsActive = false;
+    }
 
     [RelayCommand]
-    private void ShowLogs() => CurrentPage = logs;
+    private void ShowLogs()
+    {
+        CurrentPage = logs;
+        IsSettingsActive = false;
+        IsLogsActive = true;
+    }
 }
