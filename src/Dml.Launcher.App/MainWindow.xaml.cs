@@ -25,8 +25,13 @@ public partial class MainWindow : Window
     private void MaximizeButton_Click(object sender, RoutedEventArgs e) =>
         WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
 
-    private void Window_StateChanged(object? sender, EventArgs e) =>
-        MaximizeButton.Content = WindowState == WindowState.Maximized ? "\uE923" : "\uE922";
+    private void Window_StateChanged(object? sender, EventArgs e)
+    {
+        bool maximized = WindowState == WindowState.Maximized;
+        MaximizeButton.Content = maximized ? "\uE923" : "\uE922";
+        TitleBarRow.Height = new GridLength(maximized ? 44 : 38);
+        TitleBar.Padding = maximized ? new Thickness(0, 6, 6, 0) : new Thickness(0);
+    }
 
     private void CloseButton_Click(object sender, RoutedEventArgs e) => Close();
 }
