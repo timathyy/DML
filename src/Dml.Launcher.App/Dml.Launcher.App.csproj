@@ -2,6 +2,7 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <UseWPF>true</UseWPF>
+    <AssemblyName>dml</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Dml.Launcher.Application\Dml.Launcher.Application.csproj" />
