@@ -1,0 +1,13 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <sys:String x:Key="AppSubtitle" xmlns:sys="clr-namespace:System;assembly=mscorlib">Minecraft Java Edition 启动器</sys:String>
+  <sys:String x:Key="Settings" xmlns:sys="clr-namespace:System;assembly=mscorlib">设置</sys:String>
+  <sys:String x:Key="Logs" xmlns:sys="clr-namespace:System;assembly=mscorlib">日志</sys:String>
+  <sys:String x:Key="SettingsHint" xmlns:sys="clr-namespace:System;assembly=mscorlib">此版本仅提供启动器基础配置；实例和下载功能将在后续版本中加入。</sys:String>
+  <sys:String x:Key="GameRootDirectory" xmlns:sys="clr-namespace:System;assembly=mscorlib">游戏根目录</sys:String>
+  <sys:String x:Key="DownloadConcurrency" xmlns:sys="clr-namespace:System;assembly=mscorlib">下载并发数</sys:String>
+  <sys:String x:Key="ProxyAddress" xmlns:sys="clr-namespace:System;assembly=mscorlib">代理地址（可选）</sys:String>
+  <sys:String x:Key="Theme" xmlns:sys="clr-namespace:System;assembly=mscorlib">主题</sys:String>
+  <sys:String x:Key="Save" xmlns:sys="clr-namespace:System;assembly=mscorlib">保存设置</sys:String>
+  <sys:String x:Key="LogsHint" xmlns:sys="clr-namespace:System;assembly=mscorlib">日志已自动脱敏，并在本地保留 14 天。</sys:String>
+</ResourceDictionary>

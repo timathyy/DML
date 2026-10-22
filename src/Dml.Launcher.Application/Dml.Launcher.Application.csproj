@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\Dml.Launcher.Domain\Dml.Launcher.Domain.csproj" />
+  </ItemGroup>
+</Project>

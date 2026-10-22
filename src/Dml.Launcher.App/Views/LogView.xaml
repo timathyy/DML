@@ -1,0 +1,34 @@
+<UserControl x:Class="Dml.Launcher.App.Views.LogView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{DynamicResource AppBackgroundBrush}">
+  <Grid Margin="52,46,52,52">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="*" />
+    </Grid.RowDefinitions>
+    <StackPanel>
+      <TextBlock Text="系统日志" FontSize="32" FontWeight="SemiBold" />
+      <TextBlock Text="日志会自动隐藏令牌、Cookie 和其他敏感信息，并在本地保留 14 天。" Foreground="{DynamicResource MutedForeground}" Margin="0,8,0,28" FontSize="14" />
+    </StackPanel>
+    <Border Grid.Row="1" Background="{DynamicResource LogBackgroundBrush}" CornerRadius="14" Padding="1">
+      <ListBox ItemsSource="{Binding Entries}" Background="Transparent" BorderThickness="0" Foreground="{DynamicResource LogForegroundBrush}" FontFamily="Cascadia Mono, Consolas" FontSize="12" Padding="20">
+        <ListBox.ItemContainerStyle>
+          <Style TargetType="ListBoxItem">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="0,0,0,10" />
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="Template">
+              <Setter.Value>
+                <ControlTemplate TargetType="ListBoxItem">
+                  <ContentPresenter />
+                </ControlTemplate>
+              </Setter.Value>
+            </Setter>
+          </Style>
+        </ListBox.ItemContainerStyle>
+      </ListBox>
+    </Border>
+  </Grid>
+</UserControl>
