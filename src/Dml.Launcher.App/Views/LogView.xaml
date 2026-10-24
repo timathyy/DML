@@ -12,7 +12,7 @@
       <TextBlock Text="日志会自动隐藏令牌、Cookie 和其他敏感信息，并在本地保留 14 天。" Foreground="{DynamicResource MutedForeground}" Margin="0,8,0,28" FontSize="14" />
     </StackPanel>
     <Border Grid.Row="1" Background="{DynamicResource LogBackgroundBrush}" CornerRadius="14" Padding="1">
-      <ListBox ItemsSource="{Binding Entries}" Background="Transparent" BorderThickness="0" Foreground="{DynamicResource LogForegroundBrush}" FontFamily="Cascadia Mono, Consolas" FontSize="12" Padding="20">
+      <ListBox ItemsSource="{Binding Entries}" Background="Transparent" BorderThickness="0" Foreground="{DynamicResource LogForegroundBrush}" FontFamily="Cascadia Mono, Consolas" FontSize="12" Padding="20" HorizontalContentAlignment="Left" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="False">
         <ListBox.ItemContainerStyle>
           <Style TargetType="ListBoxItem">
             <Setter Property="Background" Value="Transparent" />

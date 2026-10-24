@@ -17,7 +17,7 @@
         Foreground="{DynamicResource PageForeground}"
         FontFamily="Microsoft YaHei UI, Microsoft YaHei, Segoe UI Variable Text, Segoe UI">
   <shell:WindowChrome.WindowChrome>
-    <shell:WindowChrome CaptionHeight="38" ResizeBorderThickness="6" CornerRadius="0" GlassFrameThickness="0" UseAeroCaptionButtons="False" />
+    <shell:WindowChrome CaptionHeight="38" ResizeBorderThickness="3" CornerRadius="0" GlassFrameThickness="0" UseAeroCaptionButtons="False" />
   </shell:WindowChrome.WindowChrome>
   <Window.Resources>
     <DataTemplate DataType="{x:Type viewModels:SettingsViewModel}">
@@ -26,13 +26,16 @@
     <DataTemplate DataType="{x:Type viewModels:LogViewModel}">
       <views:LogView />
     </DataTemplate>
+    <DataTemplate DataType="{x:Type viewModels:InstancesViewModel}">
+      <views:InstancesView />
+    </DataTemplate>
   </Window.Resources>
   <Grid Background="{DynamicResource AppBackgroundBrush}">
     <Grid.RowDefinitions>
-      <RowDefinition Height="38" />
+      <RowDefinition x:Name="TitleBarRow" Height="38" />
       <RowDefinition Height="*" />
     </Grid.RowDefinitions>
-    <Border Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+    <Border x:Name="TitleBar" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
       <Grid>
         <StackPanel Orientation="Horizontal" Margin="14,0,0,0" VerticalAlignment="Center">
           <Border Width="19" Height="19" CornerRadius="6" Background="{DynamicResource AccentBrush}">
@@ -72,6 +75,12 @@
           </StackPanel>
           <StackPanel Grid.Row="1" Margin="0,42,0,0">
             <TextBlock Text="工作区" Margin="12,0,0,8" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource SubtleForegroundBrush}" />
+            <Button Style="{StaticResource NavigationButtonStyle}" Tag="{Binding IsInstancesActive}" Command="{Binding ShowInstancesCommand}" Margin="0,0,0,4">
+              <StackPanel Orientation="Horizontal">
+                <TextBlock Text="▦" Width="24" FontSize="16" VerticalAlignment="Center" />
+                <TextBlock Text="实例" VerticalAlignment="Center" />
+              </StackPanel>
+            </Button>
             <Button Style="{StaticResource NavigationButtonStyle}" Tag="{Binding IsSettingsActive}" Command="{Binding ShowSettingsCommand}" Margin="0,0,0,4">
               <StackPanel Orientation="Horizontal">
                 <TextBlock Text="⚙" Width="24" FontSize="16" VerticalAlignment="Center" />
@@ -89,9 +98,9 @@
             <StackPanel>
               <StackPanel Orientation="Horizontal">
                 <Ellipse Width="7" Height="7" Fill="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
-                <TextBlock Text="DML v0.1" Margin="8,0,0,0" FontWeight="SemiBold" FontSize="12" />
+                <TextBlock Text="DML v0.2" Margin="8,0,0,0" FontWeight="SemiBold" FontSize="12" />
               </StackPanel>
-              <TextBlock Text="基础设置已就绪" Margin="15,4,0,0" FontSize="11" Foreground="{DynamicResource MutedForeground}" />
+              <TextBlock Text="实例管理已就绪" Margin="15,4,0,0" FontSize="11" Foreground="{DynamicResource MutedForeground}" />
             </StackPanel>
           </Border>
         </Grid>
