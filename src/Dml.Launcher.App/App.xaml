@@ -96,6 +96,40 @@
         </Setter>
       </Style>
 
+      <Style x:Key="NeutralButtonStyle" TargetType="Button">
+        <Setter Property="Background" Value="#D9D9D9" />
+        <Setter Property="Foreground" Value="#171717" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="18,10" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="Button">
+              <Border x:Name="Root" Background="{TemplateBinding Background}" CornerRadius="9" Padding="{TemplateBinding Padding}">
+                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+              </Border>
+              <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                  <Setter TargetName="Root" Property="Background" Value="#C7C7C7" />
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                  <Setter TargetName="Root" Property="Background" Value="#B8B8B8" />
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                  <Setter TargetName="Root" Property="Opacity" Value="0.45" />
+                </Trigger>
+              </ControlTemplate.Triggers>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+      </Style>
+
+      <Style x:Key="CompactNeutralButtonStyle" TargetType="Button" BasedOn="{StaticResource NeutralButtonStyle}">
+        <Setter Property="Padding" Value="14,6" />
+        <Setter Property="FontWeight" Value="Normal" />
+      </Style>
+
       <Style x:Key="NavigationButtonStyle" TargetType="Button">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{DynamicResource MutedForeground}" />

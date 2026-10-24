@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -43,7 +44,7 @@ public sealed partial class InstancesViewModel : ObservableObject
     [RelayCommand]
     private async Task CreateAsync()
     {
-        if (!TryPrompt("创建实例", "实例名称", "新建实例", out string name)) return;
+        if (!TryPrompt("新建实例", "新建实例", out string name)) return;
         try
         {
             GameInstance created = await instances.CreateAsync(name, "未安装");
@@ -55,10 +56,22 @@ public sealed partial class InstancesViewModel : ObservableObject
     }
 
     [RelayCommand(CanExecute = nameof(HasSelection))]
+    private void OpenFolder()
+    {
+        try
+        {
+            string directory = SelectedInstance!.GameDirectory;
+            if (!Directory.Exists(directory)) throw new DirectoryNotFoundException("实例文件夹不存在，可能已被移动或删除。");
+            Process.Start(new ProcessStartInfo { FileName = directory, UseShellExecute = true });
+        }
+        catch (Exception exception) { ShowError(exception); }
+    }
+
+    [RelayCommand(CanExecute = nameof(HasSelection))]
     private async Task CopyAsync()
     {
         GameInstance source = SelectedInstance!;
-        if (!TryPrompt("复制实例", "新实例名称", source.Name + " - 副本", out string name)) return;
+        if (!TryPrompt("复制实例", source.Name + " - 副本", out string name)) return;
         try { GameInstance copy = await instances.CopyAsync(source.Id, name); await RefreshAsync(); SelectedInstance = Items.FirstOrDefault(item => item.Id == copy.Id); }
         catch (Exception exception) { ShowError(exception); }
     }
@@ -67,7 +80,7 @@ public sealed partial class InstancesViewModel : ObservableObject
     private async Task RenameAsync()
     {
         GameInstance source = SelectedInstance!;
-        if (!TryPrompt("重命名实例", "实例名称", source.Name, out string name)) return;
+        if (!TryPrompt("重命名实例", source.Name, out string name)) return;
         try { await instances.RenameAsync(source.Id, name); await RefreshAsync(); }
         catch (Exception exception) { ShowError(exception); }
     }
@@ -76,8 +89,13 @@ public sealed partial class InstancesViewModel : ObservableObject
     private async Task DeleteAsync()
     {
         GameInstance source = SelectedInstance!;
-        MessageBoxResult confirmation = MessageBox.Show($"要将“{source.Name}”及其游戏文件移入 Windows 回收站吗？\n\n此操作不会影响官方启动器或其他 DML 实例。", "删除实例", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-        if (confirmation != MessageBoxResult.Yes) return;
+        ConfirmationDialog dialog = new(
+            "删除实例",
+            $"确定要删除“{source.Name}”吗？\n\n该实例及其游戏文件将移入 Windows 回收站，不会影响官方启动器或其他 DML 实例。")
+        {
+            Owner = System.Windows.Application.Current.MainWindow
+        };
+        if (dialog.ShowDialog() != true) return;
         try { await instances.DeleteAsync(source.Id); await RefreshAsync(); StatusMessage = "实例已移入回收站。"; }
         catch (Exception exception) { ShowError(exception); }
     }
@@ -88,7 +106,7 @@ public sealed partial class InstancesViewModel : ObservableObject
         OpenFolderDialog dialog = new() { Title = "选择要导入的 .minecraft 目录" };
         if (dialog.ShowDialog() != true) return;
         string suggestedName = Path.GetFileName(dialog.FolderName.TrimEnd(Path.DirectorySeparatorChar));
-        if (!TryPrompt("导入实例", "实例名称", string.IsNullOrWhiteSpace(suggestedName) ? "已导入实例" : suggestedName, out string name)) return;
+        if (!TryPrompt("导入实例", string.IsNullOrWhiteSpace(suggestedName) ? "已导入实例" : suggestedName, out string name)) return;
         try
         {
             GameInstance imported = await instances.ImportAsync(dialog.FolderName, name);
@@ -102,12 +120,12 @@ public sealed partial class InstancesViewModel : ObservableObject
     private bool HasSelection() => SelectedInstance is not null;
     partial void OnSelectedInstanceChanged(GameInstance? value)
     {
-        CopyCommand.NotifyCanExecuteChanged(); RenameCommand.NotifyCanExecuteChanged(); DeleteCommand.NotifyCanExecuteChanged();
+        OpenFolderCommand.NotifyCanExecuteChanged(); CopyCommand.NotifyCanExecuteChanged(); RenameCommand.NotifyCanExecuteChanged(); DeleteCommand.NotifyCanExecuteChanged();
     }
 
-    private static bool TryPrompt(string title, string label, string initialValue, out string value)
+    private static bool TryPrompt(string title, string initialValue, out string value)
     {
-        InstanceNameDialog dialog = new(title, label, initialValue);
+        InstanceNameDialog dialog = new(title, initialValue) { Owner = System.Windows.Application.Current.MainWindow };
         bool accepted = dialog.ShowDialog() == true;
         value = dialog.Value;
         return accepted;

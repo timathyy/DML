@@ -1,14 +1,14 @@
 using System.Windows;
+using System.Windows.Input;
 
 namespace Dml.Launcher.App;
 
 public partial class InstanceNameDialog : Window
 {
-    public InstanceNameDialog(string title, string label, string initialValue)
+    public InstanceNameDialog(string title, string initialValue)
     {
         InitializeComponent();
         TitleText.Text = title;
-        LabelText.Text = label;
         NameBox.Text = initialValue;
         Loaded += (_, _) => { NameBox.Focus(); NameBox.SelectAll(); };
     }
@@ -23,5 +23,10 @@ public partial class InstanceNameDialog : Window
             return;
         }
         DialogResult = true;
+    }
+
+    private void TitleText_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        if (e.LeftButton == MouseButtonState.Pressed) DragMove();
     }
 }
