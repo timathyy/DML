@@ -218,10 +218,21 @@
       </Style>
 
       <Style TargetType="Thumb">
+        <Setter Property="Margin" Value="1" />
         <Setter Property="Template">
           <Setter.Value>
             <ControlTemplate TargetType="Thumb">
-              <Border Background="{DynamicResource SubtleForegroundBrush}" CornerRadius="4" Opacity="0.55" />
+              <Border x:Name="Root" Background="{DynamicResource SubtleForegroundBrush}" CornerRadius="4" Opacity="0.58" />
+              <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                  <Setter TargetName="Root" Property="Background" Value="{DynamicResource AccentBrush}" />
+                  <Setter TargetName="Root" Property="Opacity" Value="0.88" />
+                </Trigger>
+                <Trigger Property="IsDragging" Value="True">
+                  <Setter TargetName="Root" Property="Background" Value="{DynamicResource AccentBrush}" />
+                  <Setter TargetName="Root" Property="Opacity" Value="1" />
+                </Trigger>
+              </ControlTemplate.Triggers>
             </ControlTemplate>
           </Setter.Value>
         </Setter>
@@ -229,36 +240,97 @@
 
       <Style TargetType="ScrollBar">
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Width" Value="10" />
-        <Setter Property="Height" Value="10" />
-        <Setter Property="Margin" Value="2" />
+        <Setter Property="Width" Value="8" />
+        <Setter Property="MinWidth" Value="0" />
+        <Setter Property="MinHeight" Value="0" />
+        <Setter Property="Margin" Value="0" />
         <Setter Property="Template">
           <Setter.Value>
             <ControlTemplate TargetType="ScrollBar">
-              <Grid Background="Transparent">
-                <Track x:Name="PART_Track"
-                       IsDirectionReversed="True"
-                       Maximum="{TemplateBinding Maximum}"
-                       Minimum="{TemplateBinding Minimum}"
+              <Grid SnapsToDevicePixels="True">
+                <Track x:Name="PART_Track" IsDirectionReversed="True"
+                       Maximum="{TemplateBinding Maximum}" Minimum="{TemplateBinding Minimum}"
                        Orientation="{TemplateBinding Orientation}"
-                       Value="{TemplateBinding Value}"
+                       Value="{Binding Value, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
                        ViewportSize="{TemplateBinding ViewportSize}">
                   <Track.DecreaseRepeatButton>
-                    <RepeatButton Background="Transparent" BorderThickness="0" Command="ScrollBar.PageUpCommand" />
+                    <RepeatButton Background="Transparent" BorderThickness="0" Focusable="False">
+                      <RepeatButton.Template>
+                        <ControlTemplate TargetType="RepeatButton">
+                          <Border Background="Transparent" />
+                        </ControlTemplate>
+                      </RepeatButton.Template>
+                    </RepeatButton>
                   </Track.DecreaseRepeatButton>
                   <Track.Thumb>
-                    <Thumb MinHeight="28" MinWidth="28" />
+                    <Thumb x:Name="PART_Thumb" MinHeight="32" MinWidth="6" />
                   </Track.Thumb>
                   <Track.IncreaseRepeatButton>
-                    <RepeatButton Background="Transparent" BorderThickness="0" Command="ScrollBar.PageDownCommand" />
+                    <RepeatButton Background="Transparent" BorderThickness="0" Focusable="False">
+                      <RepeatButton.Template>
+                        <ControlTemplate TargetType="RepeatButton">
+                          <Border Background="Transparent" />
+                        </ControlTemplate>
+                      </RepeatButton.Template>
+                    </RepeatButton>
                   </Track.IncreaseRepeatButton>
                 </Track>
               </Grid>
               <ControlTemplate.Triggers>
                 <Trigger Property="Orientation" Value="Horizontal">
+                  <Setter Property="Width" Value="Auto" />
+                  <Setter Property="Height" Value="8" />
                   <Setter TargetName="PART_Track" Property="IsDirectionReversed" Value="False" />
+                  <Setter TargetName="PART_Thumb" Property="MinWidth" Value="32" />
+                  <Setter TargetName="PART_Thumb" Property="MinHeight" Value="6" />
                 </Trigger>
               </ControlTemplate.Triggers>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+      </Style>
+
+      <Style TargetType="ScrollViewer">
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="ScrollViewer">
+              <Grid Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                  <RowDefinition Height="*" />
+                  <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <ScrollContentPresenter x:Name="PART_ScrollContentPresenter"
+                                        Grid.Row="0" Grid.Column="0"
+                                        Margin="{TemplateBinding Padding}"
+                                        CanContentScroll="{TemplateBinding CanContentScroll}"
+                                        Content="{TemplateBinding Content}"
+                                        ContentTemplate="{TemplateBinding ContentTemplate}"
+                                        Cursor="{TemplateBinding Cursor}" />
+                <ScrollBar x:Name="PART_VerticalScrollBar"
+                           Grid.Row="0" Grid.Column="1"
+                           Width="8" MinWidth="0"
+                           Margin="0,0,6,0"
+                           Minimum="0"
+                           Maximum="{TemplateBinding ScrollableHeight}"
+                           ViewportSize="{TemplateBinding ViewportHeight}"
+                           Value="{TemplateBinding VerticalOffset}"
+                           Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" />
+                <ScrollBar x:Name="PART_HorizontalScrollBar"
+                           Grid.Row="1" Grid.Column="0"
+                           Height="8" MinHeight="0"
+                           Margin="0,0,0,6"
+                           Minimum="0"
+                           Maximum="{TemplateBinding ScrollableWidth}"
+                           ViewportSize="{TemplateBinding ViewportWidth}"
+                           Value="{TemplateBinding HorizontalOffset}"
+                           Orientation="Horizontal"
+                           Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" />
+                <Border Grid.Row="1" Grid.Column="1" Background="Transparent" />
+              </Grid>
             </ControlTemplate>
           </Setter.Value>
         </Setter>

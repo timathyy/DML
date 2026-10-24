@@ -17,7 +17,7 @@
         Foreground="{DynamicResource PageForeground}"
         FontFamily="Microsoft YaHei UI, Microsoft YaHei, Segoe UI Variable Text, Segoe UI">
   <shell:WindowChrome.WindowChrome>
-    <shell:WindowChrome CaptionHeight="38" ResizeBorderThickness="6" CornerRadius="0" GlassFrameThickness="0" UseAeroCaptionButtons="False" />
+    <shell:WindowChrome CaptionHeight="38" ResizeBorderThickness="3" CornerRadius="0" GlassFrameThickness="0" UseAeroCaptionButtons="False" />
   </shell:WindowChrome.WindowChrome>
   <Window.Resources>
     <DataTemplate DataType="{x:Type viewModels:SettingsViewModel}">
