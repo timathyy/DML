@@ -16,6 +16,8 @@ public sealed class AppPaths
 
     public string SettingsFilePath => Path.Combine(RoamingDataDirectory, "settings.json");
 
+    public string InstancesFilePath => Path.Combine(RoamingDataDirectory, "instances.json");
+
     public string LogDirectory => Path.Combine(LocalDataDirectory, "Logs");
 
     public string DefaultGameDirectory => Path.Combine(RoamingDataDirectory, "Game");

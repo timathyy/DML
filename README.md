@@ -1,6 +1,6 @@
 # DML
 
-Delta Minecraft Launcher（DML）是一个面向 Windows 的 Minecraft: Java Edition 启动器。项目当前实现 **v0.1：项目骨架与质量基线**，尚不包含游戏下载、账户登录或游戏启动功能。
+Delta Minecraft Launcher（DML）是一个面向 Windows 的 Minecraft: Java Edition 启动器。项目当前实现 **v0.2：实例与文件系统管理**，尚不包含游戏下载、账户登录或游戏启动功能。
 
 ## 已实现
 
@@ -9,6 +9,7 @@ Delta Minecraft Launcher（DML）是一个面向 Windows 的 Minecraft: Java Edi
 - 设置持久化到 `%AppData%\\DML\\settings.json`，通过临时文件替换防止写入中断。
 - 文件日志和应用内日志视图，日志保留 14 天，并掩盖常见令牌、Cookie、密码与授权码字段。
 - 集中式 NuGet 包版本、EditorConfig、单元测试与 GitHub Actions CI。
+- 独立游戏实例的创建、复制、重命名、导入与回收站删除；实例不会覆盖官方启动器目录。
 
 ## 构建与运行
 
