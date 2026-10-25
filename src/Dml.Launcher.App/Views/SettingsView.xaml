@@ -14,7 +14,21 @@
           <TextBlock Text="存储与下载" FontSize="16" FontWeight="SemiBold" />
           <TextBlock Text="设置游戏文件位置和网络任务的处理方式。" Margin="0,5,0,24" FontSize="13" Foreground="{DynamicResource MutedForeground}" />
           <TextBlock Text="{DynamicResource GameRootDirectory}" FontSize="13" FontWeight="SemiBold" />
-          <TextBox Style="{StaticResource ModernTextBoxStyle}" Text="{Binding GameRootDirectory, UpdateSourceTrigger=PropertyChanged}" Margin="0,8,0,6" />
+          <Grid Margin="0,8,0,6">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="*" />
+              <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBox Style="{StaticResource ModernTextBoxStyle}"
+                     Text="{Binding GameRootDirectory, UpdateSourceTrigger=PropertyChanged}" />
+            <Button Grid.Column="1"
+                    Style="{StaticResource CompactNeutralButtonStyle}"
+                    Content="浏览"
+                    Command="{Binding BrowseGameRootDirectoryCommand}"
+                    Margin="10,0,0,0"
+                    VerticalAlignment="Stretch"
+                    ToolTip="用资源管理器选择游戏文件下载目录" />
+          </Grid>
           <TextBlock Text="DML 会在此位置创建独立的游戏数据目录。" FontSize="12" Foreground="{DynamicResource SubtleForegroundBrush}" />
           <StackPanel Margin="0,26,0,0">
             <TextBlock Text="{DynamicResource DownloadConcurrency}" FontSize="13" FontWeight="SemiBold" />

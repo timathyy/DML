@@ -43,6 +43,8 @@ public sealed partial class DownloadTaskViewModel : ObservableObject
 
     public bool CanTogglePause => State is DownloadState.Preparing or DownloadState.Downloading or DownloadState.Paused or DownloadState.Failed;
 
+    public bool IsResumeAction => State is DownloadState.Paused;
+
     internal void ApplyProgress(DownloadProgress progress)
     {
         if (progress.State is DownloadState.Failed or DownloadState.Canceled)
@@ -76,6 +78,7 @@ public sealed partial class DownloadTaskViewModel : ObservableObject
         OnPropertyChanged(nameof(StatusDisplayName));
         OnPropertyChanged(nameof(PauseActionText));
         OnPropertyChanged(nameof(CanTogglePause));
+        OnPropertyChanged(nameof(IsResumeAction));
     }
 
     private static string FormatBytes(double bytes)
