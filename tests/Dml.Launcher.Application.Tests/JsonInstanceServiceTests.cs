@@ -1,3 +1,4 @@
+﻿using Dml.Launcher.Domain.Instances;
 using Dml.Launcher.Domain.Settings;
 using Dml.Launcher.Infrastructure;
 using Dml.Launcher.Infrastructure.Instances;
@@ -20,6 +21,11 @@ public sealed class JsonInstanceServiceTests
             await settings.SaveAsync(new LauncherSettings(Path.Combine(temporaryDirectory, "Game"), 4, null, LauncherTheme.System));
             JsonInstanceService service = new(paths, settings, NullLogger<JsonInstanceService>.Instance);
             var created = await service.CreateAsync("生存档", "1.21.1");
+            Assert.Equal(InstanceInstallationState.Downloading, created.InstallationState);
+            await service.SetInstallationStateAsync(created.Id, InstanceInstallationState.Paused);
+            Assert.Equal(InstanceInstallationState.Paused, Assert.Single(await service.GetAllAsync()).InstallationState);
+            await service.SetMinecraftVersionAsync(created.Id, "1.21.1");
+            Assert.Equal(InstanceInstallationState.Ready, Assert.Single(await service.GetAllAsync()).InstallationState);
             await File.WriteAllTextAsync(Path.Combine(created.GameDirectory, "options.txt"), "test");
             var copy = await service.CopyAsync(created.Id, "生存档副本");
             await service.RenameAsync(copy.Id, "冒险档");
@@ -28,6 +34,7 @@ public sealed class JsonInstanceServiceTests
             Assert.NotEqual(created.GameDirectory, copy.GameDirectory);
             Assert.StartsWith(Path.Combine(temporaryDirectory, "Game", "Instances"), created.GameDirectory, StringComparison.OrdinalIgnoreCase);
             Assert.Equal("冒险档", Assert.Single(all, item => item.Id == copy.Id).Name);
+            Assert.Equal(InstanceInstallationState.Ready, copy.InstallationState);
             Assert.Equal("test", await File.ReadAllTextAsync(Path.Combine(copy.GameDirectory, "options.txt")));
         }
         finally { if (Directory.Exists(temporaryDirectory)) Directory.Delete(temporaryDirectory, recursive: true); }

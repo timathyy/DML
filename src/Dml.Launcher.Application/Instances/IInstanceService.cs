@@ -9,6 +9,7 @@ public interface IInstanceService
     Task<GameInstance> CopyAsync(Guid sourceId, string name, CancellationToken cancellationToken = default);
     Task RenameAsync(Guid id, string name, CancellationToken cancellationToken = default);
     Task SetMinecraftVersionAsync(Guid id, string minecraftVersion, CancellationToken cancellationToken = default);
+    Task SetInstallationStateAsync(Guid id, InstanceInstallationState installationState, CancellationToken cancellationToken = default);
     Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
     Task<GameInstance> ImportAsync(string sourceDirectory, string name, CancellationToken cancellationToken = default);
 }

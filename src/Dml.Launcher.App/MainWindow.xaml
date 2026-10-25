@@ -29,8 +29,8 @@
     <DataTemplate DataType="{x:Type viewModels:InstancesViewModel}">
       <views:InstancesView />
     </DataTemplate>
-    <DataTemplate DataType="{x:Type viewModels:VersionsViewModel}">
-      <views:VersionsView />
+    <DataTemplate DataType="{x:Type viewModels:DownloadsViewModel}">
+      <views:DownloadsView />
     </DataTemplate>
   </Window.Resources>
   <Grid Background="{DynamicResource AppBackgroundBrush}">
@@ -84,10 +84,10 @@
                 <TextBlock Text="实例" VerticalAlignment="Center" />
               </StackPanel>
             </Button>
-            <Button Style="{StaticResource NavigationButtonStyle}" Tag="{Binding IsVersionsActive}" Command="{Binding ShowVersionsCommand}" Margin="0,0,0,4">
+            <Button Style="{StaticResource NavigationButtonStyle}" Tag="{Binding IsDownloadsActive}" Command="{Binding ShowDownloadsCommand}" Margin="0,0,0,4">
               <StackPanel Orientation="Horizontal">
                 <TextBlock Text="⇩" Width="24" FontSize="17" VerticalAlignment="Center" />
-                <TextBlock Text="官方版本" VerticalAlignment="Center" />
+                <TextBlock Text="下载" VerticalAlignment="Center" />
               </StackPanel>
             </Button>
             <Button Style="{StaticResource NavigationButtonStyle}" Tag="{Binding IsSettingsActive}" Command="{Binding ShowSettingsCommand}" Margin="0,0,0,4">

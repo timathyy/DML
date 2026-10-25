@@ -33,6 +33,18 @@
               <StackPanel>
                 <TextBlock Text="{Binding Name}" FontSize="17" FontWeight="SemiBold" Foreground="{DynamicResource PageForeground}" />
                 <TextBlock Text="{Binding MinecraftVersion}" Margin="0,6,0,0" Foreground="{DynamicResource MutedForeground}" />
+                <TextBlock Text="{Binding DownloadStatus}" Margin="0,5,0,0" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}">
+                  <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                      <Setter Property="Visibility" Value="Collapsed" />
+                      <Style.Triggers>
+                        <DataTrigger Binding="{Binding HasDownloadStatus}" Value="True">
+                          <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                      </Style.Triggers>
+                    </Style>
+                  </TextBlock.Style>
+                </TextBlock>
                 <TextBlock Text="{Binding GameDirectory}" Margin="0,8,0,0" FontSize="11" Foreground="{DynamicResource SubtleForegroundBrush}" TextTrimming="CharacterEllipsis" />
               </StackPanel>
             </Border>
@@ -47,7 +59,36 @@
           </DataTemplate>
         </ListBox.ItemTemplate>
       </ListBox>
-      <Border Grid.Column="1" Style="{StaticResource CardStyle}"><StackPanel DataContext="{Binding SelectedInstance}"><TextBlock Text="实例详情" FontSize="16" FontWeight="SemiBold" /><TextBlock Text="{Binding Name}" Margin="0,18,0,0" FontSize="20" FontWeight="SemiBold" /><TextBlock Text="{Binding MinecraftVersion}" Margin="0,5,0,0" Foreground="{DynamicResource MutedForeground}" /><TextBlock Text="{Binding Loader, StringFormat=加载器：{0}}" Margin="0,16,0,0" /><TextBlock Text="{Binding JavaPath, StringFormat=Java：{0}}" Margin="0,5,0,0" TextTrimming="CharacterEllipsis" /><TextBlock Text="{Binding MemoryMegabytes, StringFormat=内存：{0} MB}" Margin="0,5,0,0" /><TextBlock Text="{Binding LastLaunchedAt, StringFormat=最后启动：{0:g}}" Margin="0,5,0,0" /><Separator Margin="0,20,0,14" /><StackPanel DataContext="{Binding DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}"><Button Style="{StaticResource CompactNeutralButtonStyle}" Content="打开实例文件夹" Command="{Binding OpenFolderCommand}" /><Button Style="{StaticResource CompactNeutralButtonStyle}" Content="复制实例" Command="{Binding CopyCommand}" Margin="0,8,0,0" /><Button Style="{StaticResource CompactNeutralButtonStyle}" Content="重命名" Command="{Binding RenameCommand}" Margin="0,8,0,0" /><Button Style="{StaticResource CompactNeutralButtonStyle}" Content="删除" Command="{Binding DeleteCommand}" Margin="0,8,0,0" /></StackPanel></StackPanel></Border>
+      <Border Grid.Column="1" Style="{StaticResource CardStyle}">
+        <StackPanel DataContext="{Binding SelectedInstance}">
+          <TextBlock Text="实例详情" FontSize="16" FontWeight="SemiBold" />
+          <TextBlock Text="{Binding Name}" Margin="0,18,0,0" FontSize="20" FontWeight="SemiBold" />
+          <TextBlock Text="{Binding MinecraftVersion}" Margin="0,5,0,0" Foreground="{DynamicResource MutedForeground}" />
+          <TextBlock Text="{Binding DownloadStatus}" Margin="0,5,0,0" Foreground="{DynamicResource AccentBrush}" FontWeight="SemiBold">
+            <TextBlock.Style>
+              <Style TargetType="TextBlock">
+                <Setter Property="Visibility" Value="Collapsed" />
+                <Style.Triggers>
+                  <DataTrigger Binding="{Binding HasDownloadStatus}" Value="True">
+                    <Setter Property="Visibility" Value="Visible" />
+                  </DataTrigger>
+                </Style.Triggers>
+              </Style>
+            </TextBlock.Style>
+          </TextBlock>
+          <TextBlock Text="{Binding Loader, StringFormat=加载器：{0}}" Margin="0,16,0,0" />
+          <TextBlock Text="{Binding JavaPath, StringFormat=Java：{0}}" Margin="0,5,0,0" TextTrimming="CharacterEllipsis" />
+          <TextBlock Text="{Binding MemoryMegabytes, StringFormat=内存：{0} MB}" Margin="0,5,0,0" />
+          <TextBlock Text="{Binding LastLaunchedAt, StringFormat=最后启动：{0:g}}" Margin="0,5,0,0" />
+          <Separator Margin="0,20,0,14" />
+          <StackPanel DataContext="{Binding DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}">
+            <Button Style="{StaticResource CompactNeutralButtonStyle}" Content="打开实例文件夹" Command="{Binding OpenFolderCommand}" />
+            <Button Style="{StaticResource CompactNeutralButtonStyle}" Content="复制实例" Command="{Binding CopyCommand}" Margin="0,8,0,0" />
+            <Button Style="{StaticResource CompactNeutralButtonStyle}" Content="重命名" Command="{Binding RenameCommand}" Margin="0,8,0,0" />
+            <Button Style="{StaticResource CompactNeutralButtonStyle}" Content="删除" Command="{Binding DeleteCommand}" Margin="0,8,0,0" />
+          </StackPanel>
+        </StackPanel>
+      </Border>
     </Grid>
     <TextBlock Grid.Row="2" Text="{Binding StatusMessage}" Foreground="{DynamicResource AccentBrush}" />
   </Grid>

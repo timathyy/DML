@@ -10,9 +10,10 @@ Delta Minecraft Launcher（DML）是一个面向 Windows 的 Minecraft: Java Edi
 - 文件日志和应用内日志视图，日志保留 14 天，并掩盖常见令牌、Cookie、密码与授权码字段。
 - 集中式 NuGet 包版本、EditorConfig、单元测试与 GitHub Actions CI。
 - 独立游戏实例的创建、复制、重命名、导入与回收站删除；实例不会覆盖官方启动器目录。
-- 从 Mojang 官方清单发现 release / snapshot，并缓存清单供离线查看。
+- 创建实例时从 Mojang 官方清单选择 release / snapshot，实例创建后立即开始下载。
 - 为独立实例下载版本 JSON、client JAR、Windows 所需 libraries、natives 与 assets。
-- 下载支持并发、暂停、恢复、取消、三次自动重试和 HTTP Range 断点续传；重启后重新执行安装即可继续未完成的分片。
+- 下载页集中显示实例、版本、进度、速率和剩余文件，并支持暂停、继续、取消、三次自动重试和 HTTP Range 断点续传。
+- 未完成任务的状态随实例持久化；应用重启后会恢复任务并继续使用已有 `.dmlpart` 分片。
 - 所有游戏文件都校验清单声明的大小与 SHA-1，通过后才由临时文件原子替换；损坏缓存会自动重新下载。
 
 ## 构建与运行

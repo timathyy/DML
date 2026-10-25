@@ -42,7 +42,12 @@ public sealed partial class JsonInstanceService : IInstanceService, IDisposable
         {
             List<GameInstance> instances = await ReadAsync(cancellationToken);
             EnsureUniqueName(instances, name);
-            GameInstance instance = NewInstance(name, version);
+            GameInstance instance = NewInstance(name, version) with
+            {
+                InstallationState = string.Equals(version, "未安装", StringComparison.Ordinal)
+                    ? InstanceInstallationState.Ready
+                    : InstanceInstallationState.Downloading,
+            };
             Directory.CreateDirectory(instance.GameDirectory);
             instances.Add(instance);
             await SaveAsync(instances, cancellationToken);
@@ -105,7 +110,27 @@ public sealed partial class JsonInstanceService : IInstanceService, IDisposable
         {
             List<GameInstance> instances = await ReadAsync(cancellationToken);
             GameInstance instance = Find(instances, id);
-            instances[instances.FindIndex(item => item.Id == id)] = instance with { MinecraftVersion = minecraftVersion.Trim() };
+            instances[instances.FindIndex(item => item.Id == id)] = instance with
+            {
+                MinecraftVersion = minecraftVersion.Trim(),
+                InstallationState = InstanceInstallationState.Ready,
+            };
+            await SaveAsync(instances, cancellationToken);
+        }
+        finally { gate.Release(); }
+    }
+
+    public async Task SetInstallationStateAsync(
+        Guid id,
+        InstanceInstallationState installationState,
+        CancellationToken cancellationToken = default)
+    {
+        await gate.WaitAsync(cancellationToken);
+        try
+        {
+            List<GameInstance> instances = await ReadAsync(cancellationToken);
+            GameInstance instance = Find(instances, id);
+            instances[instances.FindIndex(item => item.Id == id)] = instance with { InstallationState = installationState };
             await SaveAsync(instances, cancellationToken);
         }
         finally { gate.Release(); }

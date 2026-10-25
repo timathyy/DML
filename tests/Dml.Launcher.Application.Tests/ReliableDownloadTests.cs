@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Dml.Launcher.Application.Downloads;
 using Dml.Launcher.Domain.Downloads;
+using Dml.Launcher.Domain.Instances;
 using Dml.Launcher.Domain.Settings;
 using Dml.Launcher.Domain.Versions;
 using Dml.Launcher.Infrastructure;
@@ -280,7 +281,9 @@ public sealed class ReliableDownloadTests
             Assert.Equal(clientJar, await File.ReadAllBytesAsync(Path.Combine(instance.GameDirectory, "versions", "test-version", "test-version.jar"), CancellationToken.None));
             Assert.Equal(libraryJar, await File.ReadAllBytesAsync(Path.Combine(instance.GameDirectory, "libraries", "com", "example", "library", "1.0", "library-1.0.jar"), CancellationToken.None));
             Assert.Equal(asset, await File.ReadAllBytesAsync(Path.Combine(instance.GameDirectory, "assets", "objects", assetHash[..2], assetHash), CancellationToken.None));
-            Assert.Equal("test-version", Assert.Single(await instances.GetAllAsync(CancellationToken.None)).MinecraftVersion);
+            var installed = Assert.Single(await instances.GetAllAsync(CancellationToken.None));
+            Assert.Equal("test-version", installed.MinecraftVersion);
+            Assert.Equal(InstanceInstallationState.Ready, installed.InstallationState);
             Assert.DoesNotContain(Directory.EnumerateFiles(settings.GameRootDirectory, "*.dmlpart", SearchOption.AllDirectories), _ => true);
         }
         finally

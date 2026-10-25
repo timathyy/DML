@@ -8,7 +8,7 @@ public sealed partial class MainViewModel : ObservableObject
     private readonly SettingsViewModel settings;
     private readonly LogViewModel logs;
     private readonly InstancesViewModel instances;
-    private readonly VersionsViewModel versions;
+    private readonly DownloadsViewModel downloads;
 
     [ObservableProperty]
     private ObservableObject currentPage;
@@ -20,17 +20,17 @@ public sealed partial class MainViewModel : ObservableObject
     private bool isInstancesActive = true;
 
     [ObservableProperty]
-    private bool isVersionsActive;
+    private bool isDownloadsActive;
 
     [ObservableProperty]
     private bool isLogsActive;
 
-    public MainViewModel(SettingsViewModel settings, LogViewModel logs, InstancesViewModel instances, VersionsViewModel versions)
+    public MainViewModel(SettingsViewModel settings, LogViewModel logs, InstancesViewModel instances, DownloadsViewModel downloads)
     {
         this.settings = settings;
         this.logs = logs;
         this.instances = instances;
-        this.versions = versions;
+        this.downloads = downloads;
         currentPage = instances;
     }
 
@@ -39,17 +39,17 @@ public sealed partial class MainViewModel : ObservableObject
     {
         CurrentPage = instances;
         IsInstancesActive = true;
-        IsVersionsActive = false;
+        IsDownloadsActive = false;
         IsSettingsActive = false;
         IsLogsActive = false;
     }
 
     [RelayCommand]
-    private void ShowVersions()
+    private void ShowDownloads()
     {
-        CurrentPage = versions;
+        CurrentPage = downloads;
         IsInstancesActive = false;
-        IsVersionsActive = true;
+        IsDownloadsActive = true;
         IsSettingsActive = false;
         IsLogsActive = false;
     }
@@ -59,7 +59,7 @@ public sealed partial class MainViewModel : ObservableObject
     {
         CurrentPage = settings;
         IsInstancesActive = false;
-        IsVersionsActive = false;
+        IsDownloadsActive = false;
         IsSettingsActive = true;
         IsLogsActive = false;
     }
@@ -69,7 +69,7 @@ public sealed partial class MainViewModel : ObservableObject
     {
         CurrentPage = logs;
         IsInstancesActive = false;
-        IsVersionsActive = false;
+        IsDownloadsActive = false;
         IsSettingsActive = false;
         IsLogsActive = true;
     }

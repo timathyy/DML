@@ -1,4 +1,4 @@
-namespace Dml.Launcher.Domain.Instances;
+﻿namespace Dml.Launcher.Domain.Instances;
 
 public sealed record GameInstance(
     Guid Id,
@@ -10,4 +10,5 @@ public sealed record GameInstance(
     int MemoryMegabytes,
     int Width,
     int Height,
-    DateTimeOffset? LastLaunchedAt);
+    DateTimeOffset? LastLaunchedAt,
+    InstanceInstallationState InstallationState = InstanceInstallationState.Ready);

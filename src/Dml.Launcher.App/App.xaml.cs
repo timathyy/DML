@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Http;
 using Microsoft.Win32;
 using Dml.Launcher.App.ViewModels;
+using Dml.Launcher.App.Services;
 using Dml.Launcher.Application.Settings;
 using Dml.Launcher.Application.Instances;
 using Dml.Launcher.Application.Versions;
@@ -51,6 +52,15 @@ public partial class App : System.Windows.Application
         MainWindow window = serviceProvider.GetRequiredService<MainWindow>();
         MainWindow = window;
         window.Show();
+        try
+        {
+            await serviceProvider.GetRequiredService<DownloadManager>().InitializeAsync();
+        }
+        catch (Exception exception)
+        {
+            LogDownloadRestoreFailure(logger, exception);
+            MessageBox.Show("无法恢复未完成的下载任务，请查看日志。", "DML", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
     }
 
     protected override void OnExit(ExitEventArgs e)
@@ -89,10 +99,11 @@ public partial class App : System.Windows.Application
             return client;
         });
         services.AddSingleton<IMinecraftVersionService, MojangVersionService>();
+        services.AddSingleton<DownloadManager>();
         services.AddSingleton<SettingsViewModel>();
         services.AddSingleton<LogViewModel>();
         services.AddSingleton<InstancesViewModel>();
-        services.AddSingleton<VersionsViewModel>();
+        services.AddSingleton<DownloadsViewModel>();
         services.AddSingleton<MainViewModel>();
         services.AddSingleton<MainWindow>();
         return services.BuildServiceProvider(validateScopes: true);
@@ -168,4 +179,7 @@ public partial class App : System.Windows.Application
 
     [LoggerMessage(EventId = 4, Level = LogLevel.Critical, Message = "未处理的应用程序异常。终止：{isTerminating}")]
     private static partial void LogUnhandledFailure(ILogger logger, Exception? exception, bool isTerminating);
+
+    [LoggerMessage(EventId = 5, Level = LogLevel.Warning, Message = "恢复未完成的下载任务失败。")]
+    private static partial void LogDownloadRestoreFailure(ILogger logger, Exception exception);
 }
