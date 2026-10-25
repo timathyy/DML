@@ -1,14 +1,19 @@
 ﻿using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
+using System.Net;
+using System.Net.Http;
 using Microsoft.Win32;
 using Dml.Launcher.App.ViewModels;
 using Dml.Launcher.Application.Settings;
 using Dml.Launcher.Application.Instances;
+using Dml.Launcher.Application.Versions;
+using Dml.Launcher.Domain.Settings;
 using Dml.Launcher.Infrastructure;
 using Dml.Launcher.Infrastructure.Instances;
 using Dml.Launcher.Infrastructure.Logging;
 using Dml.Launcher.Infrastructure.Settings;
+using Dml.Launcher.Infrastructure.Versions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -65,9 +70,29 @@ public partial class App : System.Windows.Application
         services.AddLogging(builder => builder.ClearProviders().AddProvider(new FileLoggerProvider(paths, logStore)));
         services.AddSingleton<ISettingsService, JsonSettingsService>();
         services.AddSingleton<IInstanceService, JsonInstanceService>();
+        services.AddSingleton(serviceProvider =>
+        {
+            LauncherSettings settings = serviceProvider.GetRequiredService<ISettingsService>().Current;
+            SocketsHttpHandler handler = new()
+            {
+                AutomaticDecompression = DecompressionMethods.All,
+                ConnectTimeout = TimeSpan.FromSeconds(20),
+            };
+            if (settings.ProxyAddress is not null)
+            {
+                handler.Proxy = new WebProxy(settings.ProxyAddress);
+                handler.UseProxy = true;
+            }
+
+            HttpClient client = new(handler) { Timeout = TimeSpan.FromMinutes(10) };
+            client.DefaultRequestHeaders.UserAgent.ParseAdd("DML/0.3");
+            return client;
+        });
+        services.AddSingleton<IMinecraftVersionService, MojangVersionService>();
         services.AddSingleton<SettingsViewModel>();
         services.AddSingleton<LogViewModel>();
         services.AddSingleton<InstancesViewModel>();
+        services.AddSingleton<VersionsViewModel>();
         services.AddSingleton<MainViewModel>();
         services.AddSingleton<MainWindow>();
         return services.BuildServiceProvider(validateScopes: true);

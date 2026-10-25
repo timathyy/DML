@@ -29,6 +29,9 @@
     <DataTemplate DataType="{x:Type viewModels:InstancesViewModel}">
       <views:InstancesView />
     </DataTemplate>
+    <DataTemplate DataType="{x:Type viewModels:VersionsViewModel}">
+      <views:VersionsView />
+    </DataTemplate>
   </Window.Resources>
   <Grid Background="{DynamicResource AppBackgroundBrush}">
     <Grid.RowDefinitions>
@@ -81,6 +84,12 @@
                 <TextBlock Text="实例" VerticalAlignment="Center" />
               </StackPanel>
             </Button>
+            <Button Style="{StaticResource NavigationButtonStyle}" Tag="{Binding IsVersionsActive}" Command="{Binding ShowVersionsCommand}" Margin="0,0,0,4">
+              <StackPanel Orientation="Horizontal">
+                <TextBlock Text="⇩" Width="24" FontSize="17" VerticalAlignment="Center" />
+                <TextBlock Text="官方版本" VerticalAlignment="Center" />
+              </StackPanel>
+            </Button>
             <Button Style="{StaticResource NavigationButtonStyle}" Tag="{Binding IsSettingsActive}" Command="{Binding ShowSettingsCommand}" Margin="0,0,0,4">
               <StackPanel Orientation="Horizontal">
                 <TextBlock Text="⚙" Width="24" FontSize="16" VerticalAlignment="Center" />
@@ -98,9 +107,9 @@
             <StackPanel>
               <StackPanel Orientation="Horizontal">
                 <Ellipse Width="7" Height="7" Fill="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
-                <TextBlock Text="DML v0.2" Margin="8,0,0,0" FontWeight="SemiBold" FontSize="12" />
+                <TextBlock Text="DML v0.3" Margin="8,0,0,0" FontWeight="SemiBold" FontSize="12" />
               </StackPanel>
-              <TextBlock Text="实例管理已就绪" Margin="15,4,0,0" FontSize="11" Foreground="{DynamicResource MutedForeground}" />
+              <TextBlock Text="可靠下载开发版" Margin="15,4,0,0" FontSize="11" Foreground="{DynamicResource MutedForeground}" />
             </StackPanel>
           </Border>
         </Grid>

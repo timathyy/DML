@@ -3,7 +3,7 @@
   <sys:String x:Key="AppSubtitle" xmlns:sys="clr-namespace:System;assembly=mscorlib">Minecraft Java Edition 启动器</sys:String>
   <sys:String x:Key="Settings" xmlns:sys="clr-namespace:System;assembly=mscorlib">设置</sys:String>
   <sys:String x:Key="Logs" xmlns:sys="clr-namespace:System;assembly=mscorlib">日志</sys:String>
-  <sys:String x:Key="SettingsHint" xmlns:sys="clr-namespace:System;assembly=mscorlib">此版本仅提供启动器基础配置；实例和下载功能将在后续版本中加入。</sys:String>
+  <sys:String x:Key="SettingsHint" xmlns:sys="clr-namespace:System;assembly=mscorlib">下载并发数和代理设置将用于官方版本清单与游戏文件下载。</sys:String>
   <sys:String x:Key="GameRootDirectory" xmlns:sys="clr-namespace:System;assembly=mscorlib">游戏根目录</sys:String>
   <sys:String x:Key="DownloadConcurrency" xmlns:sys="clr-namespace:System;assembly=mscorlib">下载并发数</sys:String>
   <sys:String x:Key="ProxyAddress" xmlns:sys="clr-namespace:System;assembly=mscorlib">代理地址（可选）</sys:String>

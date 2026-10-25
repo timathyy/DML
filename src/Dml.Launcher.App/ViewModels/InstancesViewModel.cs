@@ -1,4 +1,4 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
@@ -50,7 +50,7 @@ public sealed partial class InstancesViewModel : ObservableObject
             GameInstance created = await instances.CreateAsync(name, "未安装");
             await RefreshAsync();
             SelectedInstance = Items.FirstOrDefault(item => item.Id == created.Id);
-            StatusMessage = "实例已创建。可在后续版本安装游戏版本。";
+            StatusMessage = "实例已创建。可前往“官方版本”页面安装游戏。";
         }
         catch (Exception exception) { ShowError(exception); }
     }

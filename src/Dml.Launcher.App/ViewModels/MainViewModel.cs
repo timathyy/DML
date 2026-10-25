@@ -8,6 +8,7 @@ public sealed partial class MainViewModel : ObservableObject
     private readonly SettingsViewModel settings;
     private readonly LogViewModel logs;
     private readonly InstancesViewModel instances;
+    private readonly VersionsViewModel versions;
 
     [ObservableProperty]
     private ObservableObject currentPage;
@@ -19,13 +20,17 @@ public sealed partial class MainViewModel : ObservableObject
     private bool isInstancesActive = true;
 
     [ObservableProperty]
+    private bool isVersionsActive;
+
+    [ObservableProperty]
     private bool isLogsActive;
 
-    public MainViewModel(SettingsViewModel settings, LogViewModel logs, InstancesViewModel instances)
+    public MainViewModel(SettingsViewModel settings, LogViewModel logs, InstancesViewModel instances, VersionsViewModel versions)
     {
         this.settings = settings;
         this.logs = logs;
         this.instances = instances;
+        this.versions = versions;
         currentPage = instances;
     }
 
@@ -34,6 +39,17 @@ public sealed partial class MainViewModel : ObservableObject
     {
         CurrentPage = instances;
         IsInstancesActive = true;
+        IsVersionsActive = false;
+        IsSettingsActive = false;
+        IsLogsActive = false;
+    }
+
+    [RelayCommand]
+    private void ShowVersions()
+    {
+        CurrentPage = versions;
+        IsInstancesActive = false;
+        IsVersionsActive = true;
         IsSettingsActive = false;
         IsLogsActive = false;
     }
@@ -43,6 +59,7 @@ public sealed partial class MainViewModel : ObservableObject
     {
         CurrentPage = settings;
         IsInstancesActive = false;
+        IsVersionsActive = false;
         IsSettingsActive = true;
         IsLogsActive = false;
     }
@@ -52,6 +69,7 @@ public sealed partial class MainViewModel : ObservableObject
     {
         CurrentPage = logs;
         IsInstancesActive = false;
+        IsVersionsActive = false;
         IsSettingsActive = false;
         IsLogsActive = true;
     }
