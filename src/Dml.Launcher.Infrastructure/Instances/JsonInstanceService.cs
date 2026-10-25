@@ -1,4 +1,4 @@
-using System.Text.Json;
+﻿using System.Text.Json;
 using Dml.Launcher.Application.Instances;
 using Dml.Launcher.Application.Settings;
 using Dml.Launcher.Domain.Instances;
@@ -42,7 +42,12 @@ public sealed partial class JsonInstanceService : IInstanceService, IDisposable
         {
             List<GameInstance> instances = await ReadAsync(cancellationToken);
             EnsureUniqueName(instances, name);
-            GameInstance instance = NewInstance(name, version);
+            GameInstance instance = NewInstance(name, version) with
+            {
+                InstallationState = string.Equals(version, "未安装", StringComparison.Ordinal)
+                    ? InstanceInstallationState.Ready
+                    : InstanceInstallationState.Downloading,
+            };
             Directory.CreateDirectory(instance.GameDirectory);
             instances.Add(instance);
             await SaveAsync(instances, cancellationToken);
@@ -64,8 +69,11 @@ public sealed partial class JsonInstanceService : IInstanceService, IDisposable
             EnsureUniqueName(instances, name);
             GameInstance copy = NewInstance(name, source.MinecraftVersion) with
             {
-                Loader = source.Loader, JavaPath = source.JavaPath, MemoryMegabytes = source.MemoryMegabytes,
-                Width = source.Width, Height = source.Height
+                Loader = source.Loader,
+                JavaPath = source.JavaPath,
+                MemoryMegabytes = source.MemoryMegabytes,
+                Width = source.Width,
+                Height = source.Height
             };
             CopyDirectory(source.GameDirectory, copy.GameDirectory);
             instances.Add(copy);
@@ -85,6 +93,44 @@ public sealed partial class JsonInstanceService : IInstanceService, IDisposable
             GameInstance instance = Find(instances, id);
             EnsureUniqueName(instances.Where(item => item.Id != id), name);
             instances[instances.FindIndex(item => item.Id == id)] = instance with { Name = name.Trim() };
+            await SaveAsync(instances, cancellationToken);
+        }
+        finally { gate.Release(); }
+    }
+
+    public async Task SetMinecraftVersionAsync(Guid id, string minecraftVersion, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(minecraftVersion))
+        {
+            throw new ArgumentException("Minecraft 版本不能为空。", nameof(minecraftVersion));
+        }
+
+        await gate.WaitAsync(cancellationToken);
+        try
+        {
+            List<GameInstance> instances = await ReadAsync(cancellationToken);
+            GameInstance instance = Find(instances, id);
+            instances[instances.FindIndex(item => item.Id == id)] = instance with
+            {
+                MinecraftVersion = minecraftVersion.Trim(),
+                InstallationState = InstanceInstallationState.Ready,
+            };
+            await SaveAsync(instances, cancellationToken);
+        }
+        finally { gate.Release(); }
+    }
+
+    public async Task SetInstallationStateAsync(
+        Guid id,
+        InstanceInstallationState installationState,
+        CancellationToken cancellationToken = default)
+    {
+        await gate.WaitAsync(cancellationToken);
+        try
+        {
+            List<GameInstance> instances = await ReadAsync(cancellationToken);
+            GameInstance instance = Find(instances, id);
+            instances[instances.FindIndex(item => item.Id == id)] = instance with { InstallationState = installationState };
             await SaveAsync(instances, cancellationToken);
         }
         finally { gate.Release(); }

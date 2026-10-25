@@ -187,3 +187,15 @@ docs/                         协议、架构决定与用户文档
 - Microsoft 的桌面应用登录示例和回调地址配置说明见 [Desktop app sign-in quickstart](https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-desktop-app-sign-in)。
 - Minecraft 版本元数据应始终从官方版本清单获取；实现时记录实际使用的清单 URL、哈希和下载协议，避免依赖第三方镜像作为唯一来源。
 
+## codex/v0.3 实现进度
+
+- [x] 从 Mojang 官方 `version_manifest_v2.json` 读取并缓存 release / snapshot 与发布日期。
+- [x] 解析版本 JSON、Windows 库规则、asset index，并生成实例内的完整下载计划。
+- [x] 下载 client、libraries、natives 和 assets；按设置控制并发数。
+- [x] 支持暂停、恢复、取消、三次自动重试与 HTTP Range 断点续传。
+- [x] 校验文件大小与 SHA-1，以 `.dmlpart` 临时文件下载并在校验成功后原子替换。
+- [x] 显示文件/字节进度、平均速率、剩余文件数和可读错误原因。
+- [x] 增加续传、损坏文件重下、清单缓存回退和完整安装计划的自动化测试。
+- [x] 将版本选择合并到实例创建流程，并用独立下载页管理进行中的任务。
+- [ ] 在实际 Windows 用户目录中手动安装一个当前稳定版，并模拟断网、退出重启与损坏文件恢复。
+

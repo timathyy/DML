@@ -20,5 +20,9 @@ public sealed class AppPaths
 
     public string LogDirectory => Path.Combine(LocalDataDirectory, "Logs");
 
+    public string MetadataCacheDirectory => Path.Combine(LocalDataDirectory, "Cache", "Metadata");
+
+    public string VersionManifestCachePath => Path.Combine(MetadataCacheDirectory, "version_manifest_v2.json");
+
     public string DefaultGameDirectory => Path.Combine(RoamingDataDirectory, "Game");
 }

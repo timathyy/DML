@@ -4,6 +4,7 @@
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Dml.Launcher.App\Dml.Launcher.App.csproj" />
     <ProjectReference Include="..\..\src\Dml.Launcher.Infrastructure\Dml.Launcher.Infrastructure.csproj" />
   </ItemGroup>
   <ItemGroup>

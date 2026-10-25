@@ -4,6 +4,7 @@ using System.IO;
 using Dml.Launcher.Application.Settings;
 using Dml.Launcher.Domain.Settings;
 using Microsoft.Extensions.Logging;
+using Microsoft.Win32;
 
 namespace Dml.Launcher.App.ViewModels;
 
@@ -43,6 +44,25 @@ public sealed partial class SettingsViewModel : ObservableObject
     public IReadOnlyList<int> DownloadConcurrencyChoices { get; } = [1, 2, 3, 4, 5, 6, 8, 12, 16];
 
     partial void OnSelectedThemeChanged(LauncherTheme value) => App.ApplyTheme(value);
+
+    [RelayCommand]
+    private void BrowseGameRootDirectory()
+    {
+        OpenFolderDialog dialog = new()
+        {
+            Title = "选择游戏文件下载目录",
+        };
+        if (Directory.Exists(GameRootDirectory))
+        {
+            dialog.InitialDirectory = Path.GetFullPath(GameRootDirectory);
+        }
+
+        if (dialog.ShowDialog() == true)
+        {
+            GameRootDirectory = dialog.FolderName;
+            StatusMessage = "已选择目录，保存后生效。";
+        }
+    }
 
     [RelayCommand]
     private async Task SaveAsync()
