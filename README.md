@@ -36,15 +36,15 @@ dotnet run --project src/Dml.Launcher.App
 - `DML-vX.Y.Z-win-x64.zip`：便携版，解压后运行 `dml.exe`。
 - `dml_installer.exe`：安装版，安装到当前用户的本地程序目录，并提供开始菜单快捷方式。
 
-两者均不需要预先安装 .NET。最近发布的 v0.2.0 包含实例管理，但不包含本分支正在开发的版本下载、账户登录或游戏启动功能。
+两者均不需要预先安装 .NET。v0.3.0 已支持创建实例时选择并可靠下载官方 Minecraft 版本，但尚不包含账户登录或游戏启动功能。
 
 从源码生成两个发布包（需要安装 [Inno Setup 6](https://jrsoftware.org/isinfo.php)）：
 
 ```powershell
-.\scripts\Package-Release.ps1 -Version 0.1.0
+.\scripts\Package-Release.ps1 -Version 0.3.0
 ```
 
-脚本会将最终发布文件放在 `artifacts/releases/vX.Y.Z/`：包括 ZIP、安装程序，以及各自同名的 SHA-256 校验文件。构建中间文件会放在 `artifacts/staging/`，不会与可发布版本混放。最近的正式发布说明见 [v0.2.0](docs/releases/v0.2.0.md)。
+脚本会将最终发布文件放在 `artifacts/releases/vX.Y.Z/`：包括 ZIP、安装程序，以及各自同名的 SHA-256 校验文件。构建中间文件会放在 `artifacts/staging/`，不会与可发布版本混放。最近的正式发布说明见 [v0.3.0](docs/releases/v0.3.0.md)。
 
 ## 本地数据位置
 
