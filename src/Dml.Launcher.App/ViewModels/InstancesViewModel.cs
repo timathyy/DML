@@ -6,9 +6,11 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Dml.Launcher.App.Services;
 using Dml.Launcher.Application.Instances;
+using Dml.Launcher.Application.Launching;
 using Dml.Launcher.Application.Settings;
 using Dml.Launcher.Application.Versions;
 using Dml.Launcher.Domain.Instances;
+using Dml.Launcher.Domain.Launching;
 using Dml.Launcher.Domain.Versions;
 using Microsoft.Win32;
 
@@ -20,21 +22,28 @@ public sealed partial class InstancesViewModel : ObservableObject
     private readonly ISettingsService settings;
     private readonly IMinecraftVersionService versionService;
     private readonly DownloadManager downloadManager;
+    private readonly IGameLauncher gameLauncher;
+    private readonly IJavaRuntimeService javaRuntimeService;
     private bool isRefreshing;
 
     [ObservableProperty] private InstanceListItemViewModel? selectedInstance;
     [ObservableProperty] private string statusMessage = "正在加载实例…";
+    [ObservableProperty] private bool isLaunching;
 
     public InstancesViewModel(
         IInstanceService instances,
         ISettingsService settings,
         IMinecraftVersionService versionService,
-        DownloadManager downloadManager)
+        DownloadManager downloadManager,
+        IGameLauncher gameLauncher,
+        IJavaRuntimeService javaRuntimeService)
     {
         this.instances = instances;
         this.settings = settings;
         this.versionService = versionService;
         this.downloadManager = downloadManager;
+        this.gameLauncher = gameLauncher;
+        this.javaRuntimeService = javaRuntimeService;
         downloadManager.TasksChanged += DownloadManager_TasksChanged;
     }
 
@@ -193,6 +202,79 @@ public sealed partial class InstancesViewModel : ObservableObject
         }
     }
 
+    [RelayCommand(CanExecute = nameof(CanModifySelection))]
+    private async Task ConfigureLaunchAsync()
+    {
+        GameInstance source = SelectedInstance!.Instance;
+        InstanceLaunchSettingsDialog dialog = new(source, javaRuntimeService)
+        {
+            Owner = System.Windows.Application.Current.MainWindow,
+        };
+        if (dialog.ShowDialog() != true)
+        {
+            return;
+        }
+
+        try
+        {
+            await instances.UpdateLaunchSettingsAsync(
+                source.Id,
+                dialog.JavaPath,
+                dialog.MemoryMegabytes,
+                dialog.WindowWidth,
+                dialog.WindowHeight,
+                dialog.Fullscreen,
+                dialog.JvmArguments);
+            await RefreshAsync();
+            SelectedInstance = Items.FirstOrDefault(item => item.Id == source.Id);
+            StatusMessage = "启动设置已保存。";
+        }
+        catch (Exception exception)
+        {
+            ShowError(exception);
+        }
+    }
+
+    [RelayCommand(CanExecute = nameof(CanLaunchSelection))]
+    private async Task CopyLaunchCommandAsync()
+    {
+        try
+        {
+            GameLaunchCommand command = await gameLauncher.BuildCommandAsync(SelectedInstance!.Instance);
+            Clipboard.SetText(command.ToDisplayString());
+            StatusMessage = "启动命令已复制到剪贴板（包含开发占位账号参数，不含正版凭据）。";
+        }
+        catch (Exception exception)
+        {
+            ShowError(exception);
+        }
+    }
+
+    [RelayCommand(CanExecute = nameof(CanLaunchSelection))]
+    private async Task LaunchAsync()
+    {
+        GameInstance source = SelectedInstance!.Instance;
+        IsLaunching = true;
+        StatusMessage = $"正在启动“{source.Name}”…游戏运行期间可在日志页查看输出。";
+        try
+        {
+            GameLaunchResult result = await gameLauncher.LaunchAsync(source);
+            StatusMessage = result.ExitCode == 0
+                ? $"“{source.Name}”已正常退出。启动日志：{result.LogPath}"
+                : $"“{source.Name}”异常退出（代码 {result.ExitCode}）。启动日志：{result.LogPath}";
+            await RefreshAsync();
+            SelectedInstance = Items.FirstOrDefault(item => item.Id == source.Id);
+        }
+        catch (Exception exception)
+        {
+            ShowError(exception);
+        }
+        finally
+        {
+            IsLaunching = false;
+        }
+    }
+
     [RelayCommand]
     private async Task ImportAsync()
     {
@@ -225,12 +307,23 @@ public sealed partial class InstancesViewModel : ObservableObject
 
     private bool CanModifySelection() => SelectedInstance?.IsReady == true;
 
+    private bool CanLaunchSelection() => CanModifySelection() && !IsLaunching;
+
     partial void OnSelectedInstanceChanged(InstanceListItemViewModel? value)
     {
         OpenFolderCommand.NotifyCanExecuteChanged();
         CopyCommand.NotifyCanExecuteChanged();
         RenameCommand.NotifyCanExecuteChanged();
         DeleteCommand.NotifyCanExecuteChanged();
+        ConfigureLaunchCommand.NotifyCanExecuteChanged();
+        CopyLaunchCommandCommand.NotifyCanExecuteChanged();
+        LaunchCommand.NotifyCanExecuteChanged();
+    }
+
+    partial void OnIsLaunchingChanged(bool value)
+    {
+        CopyLaunchCommandCommand.NotifyCanExecuteChanged();
+        LaunchCommand.NotifyCanExecuteChanged();
     }
 
     private async void DownloadManager_TasksChanged(object? sender, EventArgs e) => await RefreshAsync();

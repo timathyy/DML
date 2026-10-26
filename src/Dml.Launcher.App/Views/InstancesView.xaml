@@ -79,10 +79,14 @@
           <TextBlock Text="{Binding Loader, StringFormat=加载器：{0}}" Margin="0,16,0,0" />
           <TextBlock Text="{Binding JavaPath, StringFormat=Java：{0}}" Margin="0,5,0,0" TextTrimming="CharacterEllipsis" />
           <TextBlock Text="{Binding MemoryMegabytes, StringFormat=内存：{0} MB}" Margin="0,5,0,0" />
+          <TextBlock Text="{Binding WindowMode, StringFormat=显示：{0}}" Margin="0,5,0,0" />
           <TextBlock Text="{Binding LastLaunchedAt, StringFormat=最后启动：{0:g}}" Margin="0,5,0,0" />
           <Separator Margin="0,20,0,14" />
           <StackPanel DataContext="{Binding DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}">
-            <Button Style="{StaticResource CompactNeutralButtonStyle}" Content="打开实例文件夹" Command="{Binding OpenFolderCommand}" />
+            <Button Style="{StaticResource PrimaryButtonStyle}" Content="启动游戏" Command="{Binding LaunchCommand}" />
+            <Button Style="{StaticResource CompactNeutralButtonStyle}" Content="启动设置" Command="{Binding ConfigureLaunchCommand}" Margin="0,8,0,0" />
+            <Button Style="{StaticResource CompactNeutralButtonStyle}" Content="复制启动命令" Command="{Binding CopyLaunchCommandCommand}" Margin="0,8,0,0" />
+            <Button Style="{StaticResource CompactNeutralButtonStyle}" Content="打开实例文件夹" Command="{Binding OpenFolderCommand}" Margin="0,8,0,0" />
             <Button Style="{StaticResource CompactNeutralButtonStyle}" Content="复制实例" Command="{Binding CopyCommand}" Margin="0,8,0,0" />
             <Button Style="{StaticResource CompactNeutralButtonStyle}" Content="重命名" Command="{Binding RenameCommand}" Margin="0,8,0,0" />
             <Button Style="{StaticResource CompactNeutralButtonStyle}" Content="删除" Command="{Binding DeleteCommand}" Margin="0,8,0,0" />

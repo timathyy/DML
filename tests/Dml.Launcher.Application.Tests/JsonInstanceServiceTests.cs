@@ -26,6 +26,17 @@ public sealed class JsonInstanceServiceTests
             Assert.Equal(InstanceInstallationState.Paused, Assert.Single(await service.GetAllAsync()).InstallationState);
             await service.SetMinecraftVersionAsync(created.Id, "1.21.1");
             Assert.Equal(InstanceInstallationState.Ready, Assert.Single(await service.GetAllAsync()).InstallationState);
+            string javaPath = Path.Combine(temporaryDirectory, "java.exe");
+            await File.WriteAllBytesAsync(javaPath, []);
+            await service.UpdateLaunchSettingsAsync(created.Id, javaPath, 6144, 1600, 900, true, "-XX:+UseG1GC");
+            GameInstance configured = Assert.Single(await service.GetAllAsync());
+            Assert.Equal(javaPath, configured.JavaPath);
+            Assert.Equal(6144, configured.MemoryMegabytes);
+            Assert.True(configured.Fullscreen);
+            Assert.Equal("-XX:+UseG1GC", configured.JvmArguments);
+            DateTimeOffset launchedAt = DateTimeOffset.UtcNow;
+            await service.MarkLaunchedAsync(created.Id, launchedAt);
+            Assert.Equal(launchedAt, Assert.Single(await service.GetAllAsync()).LastLaunchedAt);
             await File.WriteAllTextAsync(Path.Combine(created.GameDirectory, "options.txt"), "test");
             var copy = await service.CopyAsync(created.Id, "生存档副本");
             await service.RenameAsync(copy.Id, "冒险档");

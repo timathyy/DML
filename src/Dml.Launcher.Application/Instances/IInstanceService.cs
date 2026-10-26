@@ -10,6 +10,16 @@ public interface IInstanceService
     Task RenameAsync(Guid id, string name, CancellationToken cancellationToken = default);
     Task SetMinecraftVersionAsync(Guid id, string minecraftVersion, CancellationToken cancellationToken = default);
     Task SetInstallationStateAsync(Guid id, InstanceInstallationState installationState, CancellationToken cancellationToken = default);
+    Task UpdateLaunchSettingsAsync(
+        Guid id,
+        string? javaPath,
+        int memoryMegabytes,
+        int width,
+        int height,
+        bool fullscreen,
+        string? jvmArguments,
+        CancellationToken cancellationToken = default);
+    Task MarkLaunchedAsync(Guid id, DateTimeOffset launchedAt, CancellationToken cancellationToken = default);
     Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
     Task<GameInstance> ImportAsync(string sourceDirectory, string name, CancellationToken cancellationToken = default);
 }

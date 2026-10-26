@@ -55,6 +55,39 @@ internal sealed class VersionMetadataDto
 
     [JsonPropertyName("libraries")]
     public List<LibraryDto> Libraries { get; init; } = [];
+
+    [JsonPropertyName("mainClass")]
+    public string MainClass { get; init; } = string.Empty;
+
+    [JsonPropertyName("arguments")]
+    public LaunchArgumentsDto? Arguments { get; init; }
+
+    [JsonPropertyName("minecraftArguments")]
+    public string? MinecraftArguments { get; init; }
+
+    [JsonPropertyName("assets")]
+    public string? Assets { get; init; }
+
+    [JsonPropertyName("type")]
+    public string? Type { get; init; }
+
+    [JsonPropertyName("javaVersion")]
+    public JavaVersionDto? JavaVersion { get; init; }
+}
+
+internal sealed class LaunchArgumentsDto
+{
+    [JsonPropertyName("game")]
+    public List<JsonElement> Game { get; init; } = [];
+
+    [JsonPropertyName("jvm")]
+    public List<JsonElement> Jvm { get; init; } = [];
+}
+
+internal sealed class JavaVersionDto
+{
+    [JsonPropertyName("majorVersion")]
+    public int MajorVersion { get; init; }
 }
 
 internal sealed class VersionDownloadsDto
@@ -83,6 +116,9 @@ internal sealed class DownloadArtifactDto
 
 internal sealed class LibraryDto
 {
+    [JsonPropertyName("name")]
+    public string Name { get; init; } = string.Empty;
+
     [JsonPropertyName("downloads")]
     public LibraryDownloadsDto? Downloads { get; init; }
 
@@ -91,6 +127,15 @@ internal sealed class LibraryDto
 
     [JsonPropertyName("rules")]
     public List<RuleDto>? Rules { get; init; }
+
+    [JsonPropertyName("extract")]
+    public ExtractRulesDto? Extract { get; init; }
+}
+
+internal sealed class ExtractRulesDto
+{
+    [JsonPropertyName("exclude")]
+    public List<string> Exclude { get; init; } = [];
 }
 
 internal sealed class LibraryDownloadsDto

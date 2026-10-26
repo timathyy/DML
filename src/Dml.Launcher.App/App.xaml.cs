@@ -8,11 +8,13 @@ using Dml.Launcher.App.ViewModels;
 using Dml.Launcher.App.Services;
 using Dml.Launcher.Application.Settings;
 using Dml.Launcher.Application.Instances;
+using Dml.Launcher.Application.Launching;
 using Dml.Launcher.Application.Versions;
 using Dml.Launcher.Domain.Settings;
 using Dml.Launcher.Infrastructure;
 using Dml.Launcher.Infrastructure.Instances;
 using Dml.Launcher.Infrastructure.Logging;
+using Dml.Launcher.Infrastructure.Launching;
 using Dml.Launcher.Infrastructure.Settings;
 using Dml.Launcher.Infrastructure.Versions;
 using Microsoft.Extensions.DependencyInjection;
@@ -95,10 +97,12 @@ public partial class App : System.Windows.Application
             }
 
             HttpClient client = new(handler) { Timeout = TimeSpan.FromMinutes(10) };
-            client.DefaultRequestHeaders.UserAgent.ParseAdd("DML/0.3");
+            client.DefaultRequestHeaders.UserAgent.ParseAdd("DML/0.4");
             return client;
         });
         services.AddSingleton<IMinecraftVersionService, MojangVersionService>();
+        services.AddSingleton<IJavaRuntimeService, JavaRuntimeService>();
+        services.AddSingleton<IGameLauncher, MinecraftGameLauncher>();
         services.AddSingleton<DownloadManager>();
         services.AddSingleton<SettingsViewModel>();
         services.AddSingleton<LogViewModel>();

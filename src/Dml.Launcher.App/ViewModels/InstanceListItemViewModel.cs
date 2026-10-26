@@ -20,6 +20,16 @@ public sealed class InstanceListItemViewModel(GameInstance instance)
 
     public int MemoryMegabytes => Instance.MemoryMegabytes;
 
+    public int Width => Instance.Width;
+
+    public int Height => Instance.Height;
+
+    public bool Fullscreen => Instance.Fullscreen;
+
+    public string? JvmArguments => Instance.JvmArguments;
+
+    public string WindowMode => Fullscreen ? "全屏" : $"{Width} × {Height}";
+
     public DateTimeOffset? LastLaunchedAt => Instance.LastLaunchedAt;
 
     public bool IsReady => Instance.InstallationState == InstanceInstallationState.Ready;

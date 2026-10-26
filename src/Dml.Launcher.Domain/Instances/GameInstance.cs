@@ -11,4 +11,6 @@ public sealed record GameInstance(
     int Width,
     int Height,
     DateTimeOffset? LastLaunchedAt,
-    InstanceInstallationState InstallationState = InstanceInstallationState.Ready);
+    InstanceInstallationState InstallationState = InstanceInstallationState.Ready,
+    string? JvmArguments = null,
+    bool Fullscreen = false);

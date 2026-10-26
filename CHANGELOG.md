@@ -2,6 +2,26 @@
 
 所有重要变更记录在本文件中。
 
+## [0.4.0] - Unreleased
+
+### Added
+
+- 自动检测并验证 Java 版本、位数和路径，也可为实例手动选择 Java。
+- 基于 Mojang 版本元数据生成原版启动命令，处理参数规则、类路径和 Windows natives。
+- 实例级内存、JVM 参数、窗口尺寸与全屏设置，以及复制启动命令诊断功能。
+- Java 子进程启动、stdout/stderr 捕获、退出状态提示和实例启动日志。
+
+### Notes
+
+- 当前仅提供开发占位账号模式，用于在 v0.5 正版 Microsoft 登录接入前验证本地启动链路；它不是离线盗版登录功能。
+
+## [0.3.0] - 2026-10-25
+
+### Added
+
+- Mojang 官方版本发现、元数据缓存和 release / snapshot 选择。
+- client、libraries、natives 与 assets 的并发可靠下载、断点续传、校验及任务恢复。
+
 ## [0.2.0] - 2026-10-24
 
 ### Added

@@ -73,7 +73,9 @@ public sealed partial class JsonInstanceService : IInstanceService, IDisposable
                 JavaPath = source.JavaPath,
                 MemoryMegabytes = source.MemoryMegabytes,
                 Width = source.Width,
-                Height = source.Height
+                Height = source.Height,
+                JvmArguments = source.JvmArguments,
+                Fullscreen = source.Fullscreen,
             };
             CopyDirectory(source.GameDirectory, copy.GameDirectory);
             instances.Add(copy);
@@ -131,6 +133,64 @@ public sealed partial class JsonInstanceService : IInstanceService, IDisposable
             List<GameInstance> instances = await ReadAsync(cancellationToken);
             GameInstance instance = Find(instances, id);
             instances[instances.FindIndex(item => item.Id == id)] = instance with { InstallationState = installationState };
+            await SaveAsync(instances, cancellationToken);
+        }
+        finally { gate.Release(); }
+    }
+
+    public async Task UpdateLaunchSettingsAsync(
+        Guid id,
+        string? javaPath,
+        int memoryMegabytes,
+        int width,
+        int height,
+        bool fullscreen,
+        string? jvmArguments,
+        CancellationToken cancellationToken = default)
+    {
+        if (memoryMegabytes is < 512 or > 131072)
+        {
+            throw new ArgumentOutOfRangeException(nameof(memoryMegabytes), "内存必须在 512 MB 到 131072 MB 之间。");
+        }
+
+        if (width is < 320 or > 16384 || height is < 240 or > 16384)
+        {
+            throw new ArgumentOutOfRangeException(nameof(width), "窗口尺寸超出允许范围。");
+        }
+
+        string? normalizedJavaPath = string.IsNullOrWhiteSpace(javaPath) ? null : Path.GetFullPath(javaPath.Trim());
+        if (normalizedJavaPath is not null && !File.Exists(normalizedJavaPath))
+        {
+            throw new FileNotFoundException("找不到所选 Java 可执行文件。", normalizedJavaPath);
+        }
+
+        await gate.WaitAsync(cancellationToken);
+        try
+        {
+            List<GameInstance> instances = await ReadAsync(cancellationToken);
+            GameInstance instance = Find(instances, id);
+            instances[instances.FindIndex(item => item.Id == id)] = instance with
+            {
+                JavaPath = normalizedJavaPath,
+                MemoryMegabytes = memoryMegabytes,
+                Width = width,
+                Height = height,
+                Fullscreen = fullscreen,
+                JvmArguments = string.IsNullOrWhiteSpace(jvmArguments) ? null : jvmArguments.Trim(),
+            };
+            await SaveAsync(instances, cancellationToken);
+        }
+        finally { gate.Release(); }
+    }
+
+    public async Task MarkLaunchedAsync(Guid id, DateTimeOffset launchedAt, CancellationToken cancellationToken = default)
+    {
+        await gate.WaitAsync(cancellationToken);
+        try
+        {
+            List<GameInstance> instances = await ReadAsync(cancellationToken);
+            GameInstance instance = Find(instances, id);
+            instances[instances.FindIndex(item => item.Id == id)] = instance with { LastLaunchedAt = launchedAt };
             await SaveAsync(instances, cancellationToken);
         }
         finally { gate.Release(); }

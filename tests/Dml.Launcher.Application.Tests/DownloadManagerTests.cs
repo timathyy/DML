@@ -134,6 +134,19 @@ public sealed class DownloadManagerTests
             return Task.CompletedTask;
         }
 
+        public Task UpdateLaunchSettingsAsync(
+            Guid id,
+            string? javaPath,
+            int memoryMegabytes,
+            int width,
+            int height,
+            bool fullscreen,
+            string? jvmArguments,
+            CancellationToken cancellationToken = default) => throw new NotSupportedException();
+
+        public Task MarkLaunchedAsync(Guid id, DateTimeOffset launchedAt, CancellationToken cancellationToken = default) =>
+            throw new NotSupportedException();
+
         public Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
             Current = null;
