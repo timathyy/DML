@@ -1,6 +1,6 @@
 # DML
 
-Delta Minecraft Launcher（DML）是一个面向 Windows 的 Minecraft: Java Edition 启动器。项目当前开发 **v0.4：Java 运行时与原版启动**；仍未接入 Microsoft 正版登录，启动功能只提供明确标注的开发占位账号模式。
+Delta Minecraft Launcher（DML）是一个面向 Windows 的 Minecraft: Java Edition 启动器。当前版本为 **v0.4：Java 运行时与原版启动**；仍未接入 Microsoft 正版登录，启动功能只提供明确标注的开发占位账号模式。
 
 ## 已实现
 
@@ -17,7 +17,7 @@ Delta Minecraft Launcher（DML）是一个面向 Windows 的 Minecraft: Java Edi
 - 所有游戏文件都校验清单声明的大小与 SHA-1，通过后才由临时文件原子替换；损坏缓存会自动重新下载。
 - 自动检测 `JAVA_HOME`、`PATH`、注册表与常见安装目录中的 Java，并校验版本与位数；也可为实例手动选择 `java.exe`。
 - 解析 Mojang 版本元数据中的 JVM/游戏参数、规则、类路径与 natives，为每个实例配置内存、JVM 参数、窗口尺寸和全屏模式。
-- 可复制完整启动命令用于诊断，并能启动 Java 子进程、捕获 stdout/stderr、记录退出代码和实例内的最新启动日志。
+- 能启动 Java 子进程、捕获 stdout/stderr、记录退出代码和实例内的最新启动日志。
 - 实例详情显示累计游玩时长；运行中的游戏可在确认后强制结束，日志页可按需启用自动换行。
 
 ## 构建与运行
@@ -40,15 +40,15 @@ dotnet run --project src/Dml.Launcher.App
 - `DML-vX.Y.Z-win-x64.zip`：便携版，解压后运行 `dml.exe`。
 - `dml_installer.exe`：安装版，安装到当前用户的本地程序目录，并提供开始菜单快捷方式。
 
-两者均不需要预先安装 .NET。最近发布的 v0.3.0 支持创建实例时选择并可靠下载官方 Minecraft 版本；当前 v0.4 开发分支新增原版启动链路，但尚未形成正式发布包，也不包含 Microsoft 正版登录。
+两者均不需要预先安装 .NET，但启动 Minecraft 仍需安装对应版本的 Java。v0.4.0 新增 Java 检测与原版启动链路，但尚不包含 Microsoft 正版登录。
 
 从源码生成两个发布包（需要安装 [Inno Setup 6](https://jrsoftware.org/isinfo.php)）：
 
 ```powershell
-.\scripts\Package-Release.ps1 -Version 0.3.0
+.\scripts\Package-Release.ps1 -Version 0.4.0
 ```
 
-脚本会将最终发布文件放在 `artifacts/releases/vX.Y.Z/`：包括 ZIP、安装程序，以及各自同名的 SHA-256 校验文件。构建中间文件会放在 `artifacts/staging/`，不会与可发布版本混放。最近的正式发布说明见 [v0.3.0](docs/releases/v0.3.0.md)。
+脚本会将最终发布文件放在 `artifacts/releases/vX.Y.Z/`：包括 ZIP、安装程序，以及各自同名的 SHA-256 校验文件。构建中间文件会放在 `artifacts/staging/`，不会与可发布版本混放。最近的正式发布说明见 [v0.4.0](docs/releases/v0.4.0.md)。
 
 ## 本地数据位置
 
