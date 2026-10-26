@@ -196,6 +196,28 @@ public sealed partial class JsonInstanceService : IInstanceService, IDisposable
         finally { gate.Release(); }
     }
 
+    public async Task AddPlayTimeAsync(Guid id, TimeSpan duration, CancellationToken cancellationToken = default)
+    {
+        long elapsedSeconds = Math.Max(0, (long)duration.TotalSeconds);
+        if (elapsedSeconds == 0)
+        {
+            return;
+        }
+
+        await gate.WaitAsync(cancellationToken);
+        try
+        {
+            List<GameInstance> instances = await ReadAsync(cancellationToken);
+            GameInstance instance = Find(instances, id);
+            long totalSeconds = instance.TotalPlaySeconds > long.MaxValue - elapsedSeconds
+                ? long.MaxValue
+                : instance.TotalPlaySeconds + elapsedSeconds;
+            instances[instances.FindIndex(item => item.Id == id)] = instance with { TotalPlaySeconds = totalSeconds };
+            await SaveAsync(instances, cancellationToken);
+        }
+        finally { gate.Release(); }
+    }
+
     public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
         await gate.WaitAsync(cancellationToken);

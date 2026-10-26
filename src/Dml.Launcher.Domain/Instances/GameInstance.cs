@@ -13,4 +13,5 @@ public sealed record GameInstance(
     DateTimeOffset? LastLaunchedAt,
     InstanceInstallationState InstallationState = InstanceInstallationState.Ready,
     string? JvmArguments = null,
-    bool Fullscreen = false);
+    bool Fullscreen = false,
+    long TotalPlaySeconds = 0);

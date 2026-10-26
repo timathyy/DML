@@ -10,7 +10,6 @@ using Dml.Launcher.Application.Launching;
 using Dml.Launcher.Application.Settings;
 using Dml.Launcher.Application.Versions;
 using Dml.Launcher.Domain.Instances;
-using Dml.Launcher.Domain.Launching;
 using Dml.Launcher.Domain.Versions;
 using Microsoft.Win32;
 
@@ -24,11 +23,12 @@ public sealed partial class InstancesViewModel : ObservableObject
     private readonly DownloadManager downloadManager;
     private readonly IGameLauncher gameLauncher;
     private readonly IJavaRuntimeService javaRuntimeService;
+    private CancellationTokenSource? activeLaunchCancellation;
+    private Guid? activeInstanceId;
     private bool isRefreshing;
 
     [ObservableProperty] private InstanceListItemViewModel? selectedInstance;
     [ObservableProperty] private string statusMessage = "正在加载实例…";
-    [ObservableProperty] private bool isLaunching;
 
     public InstancesViewModel(
         IInstanceService instances,
@@ -65,14 +65,11 @@ public sealed partial class InstancesViewModel : ObservableObject
             Items.Clear();
             foreach (GameInstance instance in loaded.OrderBy(item => item.Name, StringComparer.CurrentCultureIgnoreCase))
             {
-                Items.Add(new InstanceListItemViewModel(instance));
+                Items.Add(new InstanceListItemViewModel(instance, activeInstanceId == instance.Id));
             }
 
             SelectedInstance = Items.FirstOrDefault(item => item.Id == selectedId) ?? Items.FirstOrDefault();
-            string countMessage = Items.Count == 0
-                ? "还没有实例。创建实例时选择一个 Minecraft 版本即可开始下载。"
-                : $"共 {Items.Count} 个实例";
-            StatusMessage = $"{countMessage} {GetDiskSpaceMessage()}";
+            UpdateSummaryMessage();
         }
         catch (Exception exception)
         {
@@ -236,42 +233,55 @@ public sealed partial class InstancesViewModel : ObservableObject
     }
 
     [RelayCommand(CanExecute = nameof(CanLaunchSelection))]
-    private async Task CopyLaunchCommandAsync()
-    {
-        try
-        {
-            GameLaunchCommand command = await gameLauncher.BuildCommandAsync(SelectedInstance!.Instance);
-            Clipboard.SetText(command.ToDisplayString());
-            StatusMessage = "启动命令已复制到剪贴板（包含开发占位账号参数，不含正版凭据）。";
-        }
-        catch (Exception exception)
-        {
-            ShowError(exception);
-        }
-    }
-
-    [RelayCommand(CanExecute = nameof(CanLaunchSelection))]
-    private async Task LaunchAsync()
+    private void Launch()
     {
         GameInstance source = SelectedInstance!.Instance;
-        IsLaunching = true;
-        StatusMessage = $"正在启动“{source.Name}”…游戏运行期间可在日志页查看输出。";
+        UpdateSummaryMessage();
+        if (activeInstanceId == source.Id && activeLaunchCancellation is not null)
+        {
+            ConfirmationDialog dialog = new(
+                "强制结束实例",
+                $"确定要强制结束“{source.Name}”吗？\n\n未保存的游戏进度可能丢失，请优先在游戏内正常退出。")
+            {
+                Owner = System.Windows.Application.Current.MainWindow,
+            };
+            if (dialog.ShowDialog() == true)
+            {
+                activeLaunchCancellation.Cancel();
+            }
+
+            return;
+        }
+
+        CancellationTokenSource cancellation = new();
+        activeInstanceId = source.Id;
+        activeLaunchCancellation = cancellation;
+        SelectedInstance.IsRunning = true;
+        NotifySelectionCommands();
+        _ = RunInstanceAsync(source, cancellation);
+    }
+
+    private async Task RunInstanceAsync(GameInstance source, CancellationTokenSource cancellation)
+    {
         try
         {
-            GameLaunchResult result = await gameLauncher.LaunchAsync(source);
-            StatusMessage = result.ExitCode == 0
-                ? $"“{source.Name}”已正常退出。启动日志：{result.LogPath}"
-                : $"“{source.Name}”异常退出（代码 {result.ExitCode}）。启动日志：{result.LogPath}";
-            await RefreshAsync();
-            SelectedInstance = Items.FirstOrDefault(item => item.Id == source.Id);
+            await gameLauncher.LaunchAsync(source, cancellationToken: cancellation.Token);
+        }
+        catch (OperationCanceledException) when (cancellation.IsCancellationRequested)
+        {
         }
         catch (Exception exception)
         {
-            ShowError(exception);
+            MessageBox.Show(exception.Message, "DML", MessageBoxButton.OK, MessageBoxImage.Error);
         }
         finally
         {
-            IsLaunching = false;
+            activeInstanceId = null;
+            activeLaunchCancellation = null;
+            cancellation.Dispose();
+
+            await RefreshAsync();
+            SelectedInstance = Items.FirstOrDefault(item => item.Id == source.Id);
         }
     }
 
@@ -305,24 +315,23 @@ public sealed partial class InstancesViewModel : ObservableObject
 
     private bool HasSelection() => SelectedInstance is not null;
 
-    private bool CanModifySelection() => SelectedInstance?.IsReady == true;
+    private bool CanModifySelection() => SelectedInstance?.IsReady == true && SelectedInstance.IsRunning == false;
 
-    private bool CanLaunchSelection() => CanModifySelection() && !IsLaunching;
+    private bool CanLaunchSelection() =>
+        SelectedInstance?.IsReady == true && (activeInstanceId is null || activeInstanceId == SelectedInstance.Id);
 
     partial void OnSelectedInstanceChanged(InstanceListItemViewModel? value)
+    {
+        NotifySelectionCommands();
+    }
+
+    private void NotifySelectionCommands()
     {
         OpenFolderCommand.NotifyCanExecuteChanged();
         CopyCommand.NotifyCanExecuteChanged();
         RenameCommand.NotifyCanExecuteChanged();
         DeleteCommand.NotifyCanExecuteChanged();
         ConfigureLaunchCommand.NotifyCanExecuteChanged();
-        CopyLaunchCommandCommand.NotifyCanExecuteChanged();
-        LaunchCommand.NotifyCanExecuteChanged();
-    }
-
-    partial void OnIsLaunchingChanged(bool value)
-    {
-        CopyLaunchCommandCommand.NotifyCanExecuteChanged();
         LaunchCommand.NotifyCanExecuteChanged();
     }
 
@@ -340,6 +349,14 @@ public sealed partial class InstancesViewModel : ObservableObject
     {
         StatusMessage = "操作未完成。";
         MessageBox.Show(exception.Message, "DML", MessageBoxButton.OK, MessageBoxImage.Error);
+    }
+
+    private void UpdateSummaryMessage()
+    {
+        string countMessage = Items.Count == 0
+            ? "还没有实例。创建实例时选择一个 Minecraft 版本即可开始下载。"
+            : $"共 {Items.Count} 个实例";
+        StatusMessage = $"{countMessage} {GetDiskSpaceMessage()}";
     }
 
     private string GetDiskSpaceMessage()

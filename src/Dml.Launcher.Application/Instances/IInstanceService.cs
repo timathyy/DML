@@ -20,6 +20,7 @@ public interface IInstanceService
         string? jvmArguments,
         CancellationToken cancellationToken = default);
     Task MarkLaunchedAsync(Guid id, DateTimeOffset launchedAt, CancellationToken cancellationToken = default);
+    Task AddPlayTimeAsync(Guid id, TimeSpan duration, CancellationToken cancellationToken = default);
     Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
     Task<GameInstance> ImportAsync(string sourceDirectory, string name, CancellationToken cancellationToken = default);
 }

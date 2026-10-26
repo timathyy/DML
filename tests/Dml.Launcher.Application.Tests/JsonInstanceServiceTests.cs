@@ -37,6 +37,9 @@ public sealed class JsonInstanceServiceTests
             DateTimeOffset launchedAt = DateTimeOffset.UtcNow;
             await service.MarkLaunchedAsync(created.Id, launchedAt);
             Assert.Equal(launchedAt, Assert.Single(await service.GetAllAsync()).LastLaunchedAt);
+            TimeSpan playTime = TimeSpan.FromDays(1) + TimeSpan.FromHours(23) + TimeSpan.FromMinutes(22);
+            await service.AddPlayTimeAsync(created.Id, playTime);
+            Assert.Equal((long)playTime.TotalSeconds, Assert.Single(await service.GetAllAsync()).TotalPlaySeconds);
             await File.WriteAllTextAsync(Path.Combine(created.GameDirectory, "options.txt"), "test");
             var copy = await service.CopyAsync(created.Id, "生存档副本");
             await service.RenameAsync(copy.Id, "冒险档");

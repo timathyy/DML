@@ -3,7 +3,9 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace Dml.Launcher.App.ViewModels;
 
-public sealed class LogViewModel(InMemoryLogStore logStore) : ObservableObject
+public sealed partial class LogViewModel(InMemoryLogStore logStore) : ObservableObject
 {
+    [ObservableProperty] private bool isAutoWrapEnabled;
+
     public System.Collections.ObjectModel.ObservableCollection<string> Entries => logStore.Entries;
 }

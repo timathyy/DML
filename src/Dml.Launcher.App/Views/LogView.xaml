@@ -7,12 +7,29 @@
       <RowDefinition Height="Auto" />
       <RowDefinition Height="*" />
     </Grid.RowDefinitions>
-    <StackPanel>
-      <TextBlock Text="系统日志" FontSize="32" FontWeight="SemiBold" />
-      <TextBlock Text="日志会自动隐藏令牌、Cookie 和其他敏感信息，并在本地保留 14 天。" Foreground="{DynamicResource MutedForeground}" Margin="0,8,0,28" FontSize="14" />
-    </StackPanel>
+    <Grid Margin="0,0,0,28">
+      <StackPanel>
+        <TextBlock Text="系统日志" FontSize="32" FontWeight="SemiBold" />
+        <TextBlock Text="日志会自动隐藏令牌、Cookie 和其他敏感信息，并在本地保留 14 天。" Foreground="{DynamicResource MutedForeground}" Margin="0,8,0,0" FontSize="14" />
+      </StackPanel>
+      <CheckBox Style="{StaticResource CircularCheckBoxStyle}"
+                Content="自动换行"
+                IsChecked="{Binding IsAutoWrapEnabled}"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom" />
+    </Grid>
     <Border Grid.Row="1" Background="{DynamicResource LogBackgroundBrush}" CornerRadius="14" Padding="1">
-      <ListBox ItemsSource="{Binding Entries}" Background="Transparent" BorderThickness="0" Foreground="{DynamicResource LogForegroundBrush}" FontFamily="Cascadia Mono, Consolas" FontSize="12" Padding="20" HorizontalContentAlignment="Left" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="False">
+      <ListBox ItemsSource="{Binding Entries}" Background="Transparent" BorderThickness="0" Foreground="{DynamicResource LogForegroundBrush}" FontFamily="Cascadia Mono, Consolas" FontSize="12" Padding="20" HorizontalContentAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="False">
+        <ListBox.Style>
+          <Style TargetType="ListBox">
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto" />
+            <Style.Triggers>
+              <DataTrigger Binding="{Binding IsAutoWrapEnabled}" Value="True">
+                <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+              </DataTrigger>
+            </Style.Triggers>
+          </Style>
+        </ListBox.Style>
         <ListBox.ItemContainerStyle>
           <Style TargetType="ListBoxItem">
             <Setter Property="Background" Value="Transparent" />
@@ -22,12 +39,28 @@
             <Setter Property="Template">
               <Setter.Value>
                 <ControlTemplate TargetType="ListBoxItem">
-                  <ContentPresenter />
+                  <ContentPresenter HorizontalAlignment="Stretch" />
                 </ControlTemplate>
               </Setter.Value>
             </Setter>
           </Style>
         </ListBox.ItemContainerStyle>
+        <ListBox.ItemTemplate>
+          <DataTemplate>
+            <TextBlock Text="{Binding}">
+              <TextBlock.Style>
+                <Style TargetType="TextBlock">
+                  <Setter Property="TextWrapping" Value="NoWrap" />
+                  <Style.Triggers>
+                    <DataTrigger Binding="{Binding DataContext.IsAutoWrapEnabled, RelativeSource={RelativeSource AncestorType=ListBox}}" Value="True">
+                      <Setter Property="TextWrapping" Value="Wrap" />
+                    </DataTrigger>
+                  </Style.Triggers>
+                </Style>
+              </TextBlock.Style>
+            </TextBlock>
+          </DataTemplate>
+        </ListBox.ItemTemplate>
       </ListBox>
     </Border>
   </Grid>

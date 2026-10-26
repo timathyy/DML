@@ -18,6 +18,7 @@ Delta Minecraft Launcher（DML）是一个面向 Windows 的 Minecraft: Java Edi
 - 自动检测 `JAVA_HOME`、`PATH`、注册表与常见安装目录中的 Java，并校验版本与位数；也可为实例手动选择 `java.exe`。
 - 解析 Mojang 版本元数据中的 JVM/游戏参数、规则、类路径与 natives，为每个实例配置内存、JVM 参数、窗口尺寸和全屏模式。
 - 可复制完整启动命令用于诊断，并能启动 Java 子进程、捕获 stdout/stderr、记录退出代码和实例内的最新启动日志。
+- 实例详情显示累计游玩时长；运行中的游戏可在确认后强制结束，日志页可按需启用自动换行。
 
 ## 构建与运行
 

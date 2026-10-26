@@ -154,25 +154,52 @@ public sealed partial class MinecraftGameLauncher(
             throw new InvalidOperationException("Java 进程未能启动。");
         }
 
-        await instanceService.MarkLaunchedAsync(instance.Id, startedAt, cancellationToken);
-        LogProcessStarted(logger, instance.Name, process.Id);
-        Task readOutput = ReadLinesAsync(process.StandardOutput, line => WriteLine("stdout", line), cancellationToken);
-        Task readError = ReadLinesAsync(process.StandardError, line => WriteLine("stderr", line), cancellationToken);
+        bool forceTerminated = false;
         try
         {
-            await process.WaitForExitAsync(cancellationToken);
+            await instanceService.MarkLaunchedAsync(instance.Id, startedAt, CancellationToken.None);
+            LogProcessStarted(logger, instance.Name, process.Id);
+            Task readOutput = ReadLinesAsync(process.StandardOutput, line => WriteLine("stdout", line), CancellationToken.None);
+            Task readError = ReadLinesAsync(process.StandardError, line => WriteLine("stderr", line), CancellationToken.None);
+            try
+            {
+                await process.WaitForExitAsync(cancellationToken);
+            }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            {
+                forceTerminated = true;
+                TryTerminate(process);
+                await process.WaitForExitAsync(CancellationToken.None);
+            }
+
             await Task.WhenAll(readOutput, readError);
+            DateTimeOffset exitedAt = DateTimeOffset.Now;
+            string exitDescription = forceTerminated ? "已强制结束" : $"退出代码 {process.ExitCode}";
+            await launchLog.WriteLineAsync($"{exitedAt:O} [DML] Java 进程{exitDescription}。");
+            LogProcessExited(logger, instance.Name, process.ExitCode, logPath);
+            if (forceTerminated)
+            {
+                throw new OperationCanceledException(cancellationToken);
+            }
+
+            return new GameLaunchResult(process.ExitCode, startedAt, exitedAt, logPath);
         }
-        catch (OperationCanceledException)
+        catch
         {
             TryTerminate(process);
             throw;
         }
-
-        DateTimeOffset exitedAt = DateTimeOffset.Now;
-        await launchLog.WriteLineAsync($"{exitedAt:O} [DML] Java 进程退出，代码 {process.ExitCode}。");
-        LogProcessExited(logger, instance.Name, process.ExitCode, logPath);
-        return new GameLaunchResult(process.ExitCode, startedAt, exitedAt, logPath);
+        finally
+        {
+            try
+            {
+                await instanceService.AddPlayTimeAsync(instance.Id, DateTimeOffset.Now - startedAt, CancellationToken.None);
+            }
+            catch (Exception exception)
+            {
+                LogPlayTimeUpdateFailed(logger, instance.Name, exception);
+            }
+        }
     }
 
     private async Task<JavaInstallation> SelectJavaAsync(
@@ -574,7 +601,7 @@ public sealed partial class MinecraftGameLauncher(
                 process.Kill(entireProcessTree: true);
             }
         }
-        catch (InvalidOperationException)
+        catch (Exception exception) when (exception is InvalidOperationException or System.ComponentModel.Win32Exception)
         {
         }
     }
@@ -587,4 +614,7 @@ public sealed partial class MinecraftGameLauncher(
 
     [LoggerMessage(EventId = 312, Level = LogLevel.Information, Message = "游戏输出 [{instanceName}/{source}] {line}")]
     private static partial void LogGameOutput(ILogger logger, string instanceName, string source, string line);
+
+    [LoggerMessage(EventId = 313, Level = LogLevel.Warning, Message = "无法累计实例 {instanceName} 的游玩时长。")]
+    private static partial void LogPlayTimeUpdateFailed(ILogger logger, string instanceName, Exception exception);
 }

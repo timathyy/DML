@@ -147,6 +147,9 @@ public sealed class DownloadManagerTests
         public Task MarkLaunchedAsync(Guid id, DateTimeOffset launchedAt, CancellationToken cancellationToken = default) =>
             throw new NotSupportedException();
 
+        public Task AddPlayTimeAsync(Guid id, TimeSpan duration, CancellationToken cancellationToken = default) =>
+            throw new NotSupportedException();
+
         public Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
             Current = null;

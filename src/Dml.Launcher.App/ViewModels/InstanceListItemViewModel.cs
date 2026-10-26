@@ -1,10 +1,22 @@
 ﻿using Dml.Launcher.Domain.Instances;
 
+using CommunityToolkit.Mvvm.ComponentModel;
+
 namespace Dml.Launcher.App.ViewModels;
 
-public sealed class InstanceListItemViewModel(GameInstance instance)
+public sealed partial class InstanceListItemViewModel : ObservableObject
 {
-    public GameInstance Instance { get; } = instance;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(LaunchButtonText))]
+    private bool isRunning;
+
+    public InstanceListItemViewModel(GameInstance instance, bool isRunning = false)
+    {
+        Instance = instance;
+        this.isRunning = isRunning;
+    }
+
+    public GameInstance Instance { get; }
 
     public Guid Id => Instance.Id;
 
@@ -31,6 +43,17 @@ public sealed class InstanceListItemViewModel(GameInstance instance)
     public string WindowMode => Fullscreen ? "全屏" : $"{Width} × {Height}";
 
     public DateTimeOffset? LastLaunchedAt => Instance.LastLaunchedAt;
+
+    public string TotalPlayTime
+    {
+        get
+        {
+            TimeSpan duration = TimeSpan.FromSeconds(Math.Max(0, Instance.TotalPlaySeconds));
+            return $"{(long)duration.TotalDays}d {duration.Hours}h {duration.Minutes}m";
+        }
+    }
+
+    public string LaunchButtonText => IsRunning ? "强制结束" : "启动游戏";
 
     public bool IsReady => Instance.InstallationState == InstanceInstallationState.Ready;
 

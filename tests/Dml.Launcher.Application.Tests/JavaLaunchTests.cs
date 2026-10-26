@@ -1,5 +1,6 @@
 using System.IO.Compression;
 using System.Text;
+using Dml.Launcher.App.ViewModels;
 using Dml.Launcher.Application.Instances;
 using Dml.Launcher.Application.Launching;
 using Dml.Launcher.Domain.Instances;
@@ -12,6 +13,25 @@ namespace Dml.Launcher.Application.Tests;
 
 public sealed class JavaLaunchTests
 {
+    [Fact]
+    public void FormatsTotalPlayTimeAsDaysHoursAndMinutes()
+    {
+        GameInstance instance = new(
+            Guid.NewGuid(),
+            "测试实例",
+            "1.21.1",
+            null,
+            null,
+            @"C:\Game",
+            2048,
+            1280,
+            720,
+            null,
+            TotalPlaySeconds: (1 * 24 * 60 * 60) + (23 * 60 * 60) + (22 * 60));
+
+        Assert.Equal("1d 23h 22m", new InstanceListItemViewModel(instance).TotalPlayTime);
+    }
+
     [Theory]
     [InlineData("1.8.0_442", 8)]
     [InlineData("17.0.12", 17)]
@@ -189,6 +209,8 @@ public sealed class JavaLaunchTests
         public Task UpdateLaunchSettingsAsync(Guid id, string? javaPath, int memoryMegabytes, int width, int height, bool fullscreen, string? jvmArguments, CancellationToken cancellationToken = default) => throw new NotSupportedException();
 
         public Task MarkLaunchedAsync(Guid id, DateTimeOffset launchedAt, CancellationToken cancellationToken = default) => Task.CompletedTask;
+
+        public Task AddPlayTimeAsync(Guid id, TimeSpan duration, CancellationToken cancellationToken = default) => Task.CompletedTask;
 
         public Task DeleteAsync(Guid id, CancellationToken cancellationToken = default) => throw new NotSupportedException();
 
